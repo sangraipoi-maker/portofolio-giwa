@@ -129,3 +129,95 @@ Kirana `pratinjau-portofolio-pionir.html`, 11 Okt) + tambahan kolom sekolah:
   id yang dirujuk `app.js` teratasi di HTML / dibuat dinamis oleh app.js.
   Verifikasi live: isi berkas tersaji di alamat live diperiksa sesudah
   deploy (lihat catatan rilis di bawah).
+
+---
+
+## Putaran 3 — PORTING SETIA mockup Kirana (perintah Arkasha 2026-10-16 02:56, commit `e6e6744`)
+
+Keputusan Arkasha: mockup aslinya (`~/workspace/pratinjau-portofolio-pionir.html`)
+LEBIH BAGUS dari terapan putaran 2 — maka putaran ini **porting, bukan
+interpretasi**: struktur HTML per bagian dan nilai CSS mockup diangkat
+apa adanya ke situs live.
+
+### Yang sekarang mengikuti mockup secara NILAI (terverifikasi uji statis + render)
+
+- **Sistem bingkai mockup**: `.frame` (padding 3px, sudut terpotong
+  `--cut:1.1rem`) > `.inner` (padding 1.4rem 1.5rem, potongan `cut − 3px`);
+  warna bingkai bergilir per kartu persis urutan mockup
+  (oranye, biru, hijau, ungu, pink, kuning); `.lift:hover` naik −8px.
+- **Token persis**: `--paper:#fffdf3`, `--brown-deep:#3f2415` (putaran 2
+  sempat memakai #461a0c — dikoreksi), `--line:#e5e1d9`, palet pastel
+  thumbnail kartu persis daftar mockup.
+- **Tombol pil mockup**: radius 999px, garis 2px cokelat, bayangan keras
+  `0 6px rgba(70,26,12,.35)`, kuning bawaan / oranye / ghost.
+- **Header**: `header` tetap full-width > `.nav` pil (max 72rem, bayangan
+  `0 6px rgba(35,35,35,.22)`) dengan bintang brand + tautan kapital.
+- **Hero**: padding 8.5rem/5.5rem, gradasi radial langit persis string
+  mockup, lapisan anyaman `.weave`, lencana ✦, judul clamp s.d. 5.2rem
+  dengan bayangan lapis kuning/oranye persis, bangau SVG mockup, bintang
+  SVG mockup, tikar `.mat` di kaki hero.
+- **Animasi mockup HIDUP di live** (keluhan "kok ga ada animasi" dijawab
+  dengan bukti terukur, bukan klaim): di Chromium, gaya terhitung
+  `.bird` = `sway 7.6s` dan transform bangau maupun bintang BERUBAH antar
+  dua waktu sampling; reveal memakai pola mockup (`.rv` → `.on`,
+  IntersectionObserver threshold 0.12) — 22/22 elemen ter-reveal sesudah
+  gulir; `prefers-reduced-motion` tetap dihormati persis blok mockup.
+- **Tentang**: grid 5fr/7fr mockup — frame biru berisi potret SVG mockup
+  persis + frame oranye "Cerita Singkat" + kotak fakta mockup.
+- **Proyek**: kartu `.frame > .inner.proj` mockup — thumbnail pastel
+  150px + glif mockup, judul/desc tipografi mockup, chip `.tag`
+  (kapital via CSS seperti tampilan mockup).
+- **Keahlian**: dua frame mockup (bar berwarna bergilir hijau/biru/ungu/
+  pink persis urutan bar mockup; chip alat & bahasa gaya `.chip` mockup).
+- **Kontak**: panel tengah mockup — email dipromosikan menjadi tombol
+  CTA oranye besar (pola mockup: email tampil sebagai tombol), tautan
+  lain menjadi kotak ikon `.socials` 46px berglif mockup.
+- **Footer**: margin 5rem, wordmark raksasa clamp s.d. 8.5rem, grid
+  Tentang/Eksplorasi/Kontak, catatan kaki.
+
+### Selisih yang disengaja (beserta alasan)
+
+1. **Judul hero = nama pemilik**, bukan slogan mockup + baris peran:
+   model data tidak punya bidang slogan/peran; tagline pemilik mengisi
+   baris deskripsi `p.desc`. (Menambah bidang slogan = perubahan model
+   data; menunggu perintah Arkasha.)
+2. **Kartu proyek punya tombol "Kunjungi →"** (`.btn small` mockup) dan
+   chip kedua berisi status (Live/Dalam Pengembangan): kebutuhan data
+   nyata; mockup contoh tidak punya tautan keluar per kartu.
+3. **Fakta Tentang dihitung dari konten** (4 proyek · 3 live · UGM),
+   bukan placeholder "00+" mockup; teks Tentang satu paragraf mengikuti
+   data (mockup contoh dua paragraf lorem).
+4. **PENDIDIKAN tidak ada di mockup** — dibangun MURNI dari komponen
+   mockup (`.frame`, `.inner`, `.tag`) di antara Tentang dan Proyek,
+   sesuai perintah tetap Arkasha; nav menambah tautan PENDIDIKAN.
+5. **Slot tombol kanan header = "Masuk Pemilik"** (sistem edit), tampil
+   hanya sesudah Firebase aktif; mockup memakai slot itu untuk tombol
+   "Hubungi Saya".
+6. **UI pemilik** (bar pemilik, modal masuk, formulir edit) tidak ada di
+   mockup — dibangun hanya dari token & komponen mockup.
+7. Aset dinaikkan ke `?v=pionir3` (anti-cache).
+
+### ⚠️ Bug fatal yang ditemukan & diperbaiki di putaran ini
+
+Sejak commit PERTAMA, `public/app.js` mendeklarasikan `const isOwner`
+padahal `public/core.js` juga mengekspor `function isOwner` global —
+skrip klasik berbagi ruang global, jadi app.js mati total oleh
+SyntaxError: **situs tidak pernah benar-benar ter-render** (pengunjung
+hanya melihat teks "Memuat…" bawaan HTML). Verifikasi putaran-putaran
+sebelumnya hanya memeriksa berkas tersaji, bukan tereksekusi — lolos.
+Perbaikan: helper lokal diganti nama `meIsOwner`, ditambah **uji regresi**
+yang melarang app.js mendeklarasikan ulang nama global core.js mana pun.
+Verifikasi sekarang mencakup render sungguhan di Chromium (jumlah kartu,
+bar, CTA) — bukan hanya isi berkas.
+
+### Uji & verifikasi putaran 3
+
+- **113 uji lulus, 0 gagal** (termasuk ±33 assertion kesetiaan nilai
+  mockup + uji regresi di atas).
+- **Banding visual Playwright** (mockup vs build baru, viewport sama
+  360px & 1280px, per bagian): hero/tentang/proyek/keahlian/kontak/
+  footer sekomposisi dan senilai; bahkan artefak render border+clip-path
+  pada `.chip` identik antara mockup dan hasil porting.
+- **Live**: sesudah push, keempat berkas (index/styles/app/core) diunduh
+  dari alamat live dan terbukti **identik byte-per-byte** dengan build
+  lokal yang sudah dirender-verifikasi.

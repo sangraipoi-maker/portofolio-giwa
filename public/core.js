@@ -55,6 +55,25 @@ const DEFAULT_CONTENT = {
       tag: "Alat Baca",
     },
   ],
+  education: [
+    {
+      id: "ugm-psikologi",
+      school: "Universitas Gadjah Mada",
+      level: "Fakultas Psikologi",
+      period: "",
+      note: "",
+    },
+  ],
+  skills: {
+    bars: [
+      { id: "web", label: "Pengembangan Web", pct: 85 },
+      { id: "uiux", label: "Desain Antarmuka (UI/UX)", pct: 75 },
+      { id: "riset", label: "Riset & Penulisan Akademik", pct: 80 },
+      { id: "konten", label: "Pembuatan Konten Digital", pct: 70 },
+    ],
+    tools: ["HTML & CSS", "JavaScript", "Firebase", "Git & GitHub", "GitHub Pages", "OpenStreetMap"],
+    languages: ["Bahasa Indonesia", "Bahasa Inggris"],
+  },
   links: [
     { id: "lynk", label: "Toko Lynk — lynk.id/ngerti", url: "https://lynk.id/ngerti", kind: "toko" },
     { id: "instagram", label: "Instagram — @giwa.tulung.agung", url: "https://instagram.com/giwa.tulung.agung", kind: "instagram" },
@@ -67,6 +86,8 @@ const DEFAULT_CONTENT = {
 const MAX = {
   siteName: 80, ownerName: 120, tagline: 300, about: 3000,
   projTitle: 120, projDesc: 600, projTag: 60, statusLabel: 60,
+  eduSchool: 120, eduLevel: 120, eduPeriod: 60, eduNote: 400, maxEducation: 20,
+  skillLabel: 80, skillItem: 40, maxSkillBars: 12, maxSkillItems: 24,
   linkLabel: 120, maxProjects: 60, maxLinks: 30,
 };
 const ALLOWED_URL = /^(https?:\/\/|mailto:)/i;
@@ -95,6 +116,8 @@ function sanitizeContent(raw) {
     tagline: cleanStr(src.tagline, MAX.tagline),
     about: cleanStr(src.about, MAX.about),
     projects: [],
+    education: [],
+    skills: { bars: [], tools: [], languages: [] },
     links: [],
   };
   const seenP = new Set();
@@ -118,6 +141,49 @@ function sanitizeContent(raw) {
       tag: cleanStr(p.tag, MAX.projTag),
     });
   }
+  const seenE = new Set();
+  // Sama seperti proyek: bukan array -> bawaan; array (walau kosong) dihormati.
+  const edus = Array.isArray(src.education) ? src.education : DEFAULT_CONTENT.education;
+  for (const e of edus.slice(0, MAX.maxEducation)) {
+    if (!e || typeof e !== "object") continue;
+    const school = cleanStr(e.school, MAX.eduSchool);
+    if (!school) continue;
+    let id = slugId(e.id, "");
+    if (!id || seenE.has(id)) id = "sekolah-" + (seenE.size + 1) + "-" + slugId(school, "x");
+    seenE.add(id);
+    out.education.push({
+      id,
+      school,
+      level: cleanStr(e.level, MAX.eduLevel),
+      period: cleanStr(e.period, MAX.eduPeriod),
+      note: cleanStr(e.note, MAX.eduNote),
+    });
+  }
+  // Keahlian: bar berlabel+persen, plus dua daftar chip (alat & bahasa).
+  const sk = src.skills && typeof src.skills === "object" ? src.skills : DEFAULT_CONTENT.skills;
+  const seenB = new Set();
+  const bars = Array.isArray(sk.bars) ? sk.bars : DEFAULT_CONTENT.skills.bars;
+  for (const b of bars.slice(0, MAX.maxSkillBars)) {
+    if (!b || typeof b !== "object") continue;
+    const label = cleanStr(b.label, MAX.skillLabel);
+    if (!label) continue;
+    let id = slugId(b.id, "");
+    if (!id || seenB.has(id)) id = "keahlian-" + (seenB.size + 1) + "-" + slugId(label, "x");
+    seenB.add(id);
+    const pct = Math.max(0, Math.min(100, Math.round(Number(b.pct) || 0)));
+    out.skills.bars.push({ id, label, pct });
+  }
+  const cleanItems = (arr, fallback) => {
+    const list = Array.isArray(arr) ? arr : fallback;
+    const outItems = [];
+    for (const it of list.slice(0, MAX.maxSkillItems)) {
+      const s = cleanStr(it, MAX.skillItem);
+      if (s && !outItems.includes(s)) outItems.push(s);
+    }
+    return outItems;
+  };
+  out.skills.tools = cleanItems(sk.tools, DEFAULT_CONTENT.skills.tools);
+  out.skills.languages = cleanItems(sk.languages, DEFAULT_CONTENT.skills.languages);
   const seenL = new Set();
   const links = Array.isArray(src.links) ? src.links : DEFAULT_CONTENT.links;
   for (const l of links.slice(0, MAX.maxLinks)) {

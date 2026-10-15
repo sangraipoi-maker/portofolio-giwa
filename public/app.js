@@ -28,7 +28,7 @@ const claimable = () => !!user && !contentDoc && C.canClaim(contentDoc);
  * JS/IO atau dengan prefers-reduced-motion, konten selalu tampil penuh. */
 let revealObserver = null;
 function initReveal() {
-  const els = $$(".hero > *, main section > h2, #projectGrid > .card, #linkList > li");
+  const els = $$(".hero-inner > *, main section .kicker, main section h2.sec, .about-grid > .panel, #eduList > .card, #projectGrid > .card, .skills-grid > .panel, #linkList > li");
   const reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (reduce || !("IntersectionObserver" in window)) {
     els.forEach((el) => el.classList.add("rv-in"));
@@ -49,28 +49,72 @@ function initReveal() {
   });
 }
 
+/* ---------- glif pita kartu proyek (SVG generik, bergilir per posisi) ---------- */
+const GLYPHS = [
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><rect x="14" y="22" width="72" height="52" rx="8" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/><path d="M14 34 H86" stroke="#4b2a18" stroke-width="4"/><circle cx="24" cy="28" r="3" fill="#f20f50"/><circle cx="34" cy="28" r="3" fill="#ffe029"/></svg>`,
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><rect x="30" y="12" width="40" height="76" rx="9" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/><path d="M42 26 H58 M42 38 H58 M42 50 H52" stroke="#4b2a18" stroke-width="4" stroke-linecap="round"/></svg>`,
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><path d="M16 78 V46 M38 78 V30 M60 78 V54 M82 78 V22" stroke="#4b2a18" stroke-width="7" stroke-linecap="round"/><path d="M12 84 H88" stroke="#4b2a18" stroke-width="4" stroke-linecap="round"/></svg>`,
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="30" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/><path d="M50 32 V50 L64 60" stroke="#4b2a18" stroke-width="4" stroke-linecap="round"/></svg>`,
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 82 C20 62 16 40 30 28 C42 18 50 30 50 38 C50 30 58 18 70 28 C84 40 80 62 50 82Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="4" stroke-linejoin="round"/></svg>`,
+  `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L61 39 L94 39 L67 58 L77 90 L50 71 L23 90 L33 58 L6 39 L39 39Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="4" stroke-linejoin="round"/></svg>`,
+];
+
+/* ---------- fakta singkat di panel Tentang (dihitung dari konten) ---------- */
+function renderFacts() {
+  const el = $("#aboutFacts");
+  if (!el) return;
+  const live = content.projects.filter((p) => p.status === "live").length;
+  el.innerHTML = `
+    <div class="fact"><b>${content.projects.length}</b><span>Proyek Dibangun</span></div>
+    <div class="fact"><b>${live}</b><span>Situs Live</span></div>
+    <div class="fact"><b>UGM</b><span>Fakultas Psikologi</span></div>`;
+}
+
 /* ---------- render tampilan publik ---------- */
 function renderView() {
   document.title = content.siteName;
   $("#brandName").textContent = content.siteName;
   $("#footName").textContent = content.siteName;
+  $("#footTagline").textContent = content.tagline;
   $("#ownerName").textContent = content.ownerName;
   $("#tagline").textContent = content.tagline;
   $("#aboutText").textContent = content.about;
+  renderFacts();
 
-  $("#projectGrid").innerHTML = content.projects.length ? content.projects.map((p) => `
+  $("#eduList").innerHTML = content.education.length ? content.education.map((e) => `
     <article class="card">
       <div class="meta">
+        ${e.level ? `<span class="badge">${esc(e.level)}</span>` : ""}
+        ${e.period ? `<span class="badge period">${esc(e.period)}</span>` : ""}
+      </div>
+      <h3>${esc(e.school)}</h3>
+      ${e.note ? `<p>${esc(e.note)}</p>` : ""}
+    </article>`).join("") : `<p class="loading">Belum ada riwayat pendidikan.</p>`;
+
+  $("#projectGrid").innerHTML = content.projects.length ? content.projects.map((p, i) => `
+    <article class="card">
+      <div class="thumb">${GLYPHS[i % GLYPHS.length]}</div>
+      <div class="meta">
         <span class="badge ${p.status === "dev" ? "dev" : "live"}">${esc(p.statusLabel)}</span>
-        ${p.tag ? `<span class="badge">${esc(p.tag)}</span>` : ""}
       </div>
       <h3>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</h3>
       <p>${esc(p.desc)}</p>
+      ${p.tag ? `<div class="tags"><span class="tag">${esc(p.tag)}</span></div>` : ""}
       ${p.url ? `<a class="visit" href="${esc(p.url)}" target="_blank" rel="noopener">Kunjungi →</a>` : `<span class="save-note">Belum tayang</span>`}
     </article>`).join("") : `<p class="loading">Belum ada proyek.</p>`;
 
+  $("#skillBars").innerHTML = content.skills.bars.length ? content.skills.bars.map((b) => `
+    <div class="skill-row">
+      <div class="lbl"><span>${esc(b.label)}</span><span>${b.pct}%</span></div>
+      <div class="bar"><i style="width:${b.pct}%"></i></div>
+    </div>`).join("") : `<p class="loading">Belum ada data keahlian.</p>`;
+  $("#skillTools").innerHTML = content.skills.tools.map((s) => `<span class="chip">${esc(s)}</span>`).join("");
+  $("#skillLangs").innerHTML = content.skills.languages.map((s) => `<span class="chip">${esc(s)}</span>`).join("");
+
   $("#linkList").innerHTML = content.links.map((l) => `
     <li><a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""}>${esc(l.label)}</a></li>`).join("");
+  $("#footLinks").innerHTML = content.links.slice(0, 4).map((l) => `
+    <a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""}>${esc(l.label)}</a>`).join("");
 
   renderOwnerBar();
   initReveal();
@@ -83,7 +127,7 @@ function renderOwnerBar() {
   bar.classList.remove("hidden");
   if (editing) {
     bar.innerHTML = `
-      <span class="grow">✏️ Mode edit aktif — ubah teks langsung di halaman, atur kartu proyek & tautan di bawah, lalu simpan.</span>
+      <span class="grow">✏️ Mode edit aktif — ubah teks langsung di halaman, atur pendidikan, kartu proyek, keahlian & tautan di bawah, lalu simpan.</span>
       <button class="btn small" id="saveBtn" type="button">💾 Simpan Perubahan</button>
       <button class="btn small ghost" id="cancelBtn" type="button">Batalkan</button>
       <span class="save-note" id="saveNote"></span>`;
@@ -179,6 +223,99 @@ function renderEdit() {
     renderEdit();
   });
 
+  renderFacts();
+
+  /* --- formulir pendidikan: tambah/edit/hapus/urut, pola sama seperti proyek --- */
+  $("#eduList").innerHTML = content.education.map((e, i) => `
+    <article class="card editing" data-edu="${esc(e.id)}">
+      <label class="fld">Nama sekolah / kampus
+        <input data-ef="school" type="text" value="${esc(e.school)}" maxlength="120">
+      </label>
+      <label class="fld">Jenjang / keterangan
+        <input data-ef="level" type="text" value="${esc(e.level)}" maxlength="120" placeholder="mis. Fakultas Psikologi">
+      </label>
+      <label class="fld">Periode (boleh kosong)
+        <input data-ef="period" type="text" value="${esc(e.period)}" maxlength="60" placeholder="mis. 2023 — sekarang">
+      </label>
+      <label class="fld">Catatan singkat
+        <textarea data-ef="note" rows="2" maxlength="400">${esc(e.note)}</textarea>
+      </label>
+      <div class="edit-actions">
+        <button class="icon-btn" type="button" data-eact="up" ${i === 0 ? "disabled" : ""}>↑ Naik</button>
+        <button class="icon-btn" type="button" data-eact="down" ${i === content.education.length - 1 ? "disabled" : ""}>↓ Turun</button>
+        <button class="icon-btn red" type="button" data-eact="del">🗑 Hapus entri</button>
+      </div>
+    </article>`).join("") + `
+    <article class="card" style="align-items:flex-start;justify-content:center">
+      <button class="btn" type="button" id="addEduBtn">＋ Tambah Pendidikan</button>
+      <p class="save-note">Entri baru muncul di urutan terakhir; naikkan dengan tombol ↑ sesudah menyimpan.</p>
+    </article>`;
+  $$("#eduList [data-edu]").forEach((card) => {
+    $$("[data-eact]", card).forEach((b) => b.addEventListener("click", () => {
+      const draft = collectDraft();
+      const id = card.dataset.edu;
+      if (b.dataset.eact === "del") {
+        if (!confirm("Hapus entri pendidikan ini dari daftar? (berlaku sesudah disimpan)")) return;
+        draft.education = C.removeItem(draft.education, id);
+      } else {
+        draft.education = C.moveItem(draft.education, id, b.dataset.eact);
+      }
+      content = C.sanitizeContent(draft);
+      renderEdit();
+    }));
+  });
+  $("#addEduBtn").addEventListener("click", () => {
+    const draft = collectDraft();
+    draft.education.push({ id: C.makeId("sekolah", draft.education), school: "Sekolah Baru", level: "", period: "", note: "" });
+    content = C.sanitizeContent(draft);
+    renderEdit();
+  });
+
+  /* --- formulir keahlian: bar (label + persen) & dua daftar chip --- */
+  $("#skillBars").innerHTML = content.skills.bars.map((b, i) => `
+    <div class="skill-edit" data-bar="${esc(b.id)}" style="display:grid;gap:.4rem;margin-bottom:.8rem">
+      <label class="fld" style="margin:0">Nama keahlian
+        <input data-sf="label" type="text" value="${esc(b.label)}" maxlength="80">
+      </label>
+      <label class="fld" style="margin:0">Tingkat (0–100)
+        <input data-sf="pct" type="number" min="0" max="100" step="1" value="${b.pct}">
+      </label>
+      <div class="edit-actions">
+        <button class="icon-btn" type="button" data-sact="up" ${i === 0 ? "disabled" : ""}>↑ Naik</button>
+        <button class="icon-btn" type="button" data-sact="down" ${i === content.skills.bars.length - 1 ? "disabled" : ""}>↓ Turun</button>
+        <button class="icon-btn red" type="button" data-sact="del">🗑 Hapus</button>
+      </div>
+    </div>`).join("") + `
+    <div><button class="btn small ghost" type="button" id="addBarBtn">＋ Tambah Keahlian</button></div>`;
+  $$("#skillBars [data-bar]").forEach((row) => {
+    $$("[data-sact]", row).forEach((b) => b.addEventListener("click", () => {
+      const draft = collectDraft();
+      const id = row.dataset.bar;
+      if (b.dataset.sact === "del") {
+        if (!confirm("Hapus keahlian ini? (berlaku sesudah disimpan)")) return;
+        draft.skills.bars = C.removeItem(draft.skills.bars, id);
+      } else {
+        draft.skills.bars = C.moveItem(draft.skills.bars, id, b.dataset.sact);
+      }
+      content = C.sanitizeContent(draft);
+      renderEdit();
+    }));
+  });
+  $("#addBarBtn").addEventListener("click", () => {
+    const draft = collectDraft();
+    draft.skills.bars.push({ id: C.makeId("keahlian", draft.skills.bars), label: "Keahlian Baru", pct: 50 });
+    content = C.sanitizeContent(draft);
+    renderEdit();
+  });
+  $("#skillTools").innerHTML = `
+    <label class="fld" style="flex:1 1 100%;margin:0">Satu alat per baris
+      <textarea id="toolsInput" rows="4">${esc(content.skills.tools.join("\n"))}</textarea>
+    </label>`;
+  $("#skillLangs").innerHTML = `
+    <label class="fld" style="flex:1 1 100%;margin:0">Satu bahasa per baris
+      <textarea id="langsInput" rows="2">${esc(content.skills.languages.join("\n"))}</textarea>
+    </label>`;
+
   $("#linkList").innerHTML = content.links.map((l) => `
     <li data-link="${esc(l.id)}" style="display:grid;gap:.4rem;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem">
       <label class="fld" style="margin:0">Label tautan
@@ -217,6 +354,8 @@ function collectDraft() {
     tagline: $("#tagline").innerText,
     about: $("#aboutText").innerText,
     projects: [],
+    education: [],
+    skills: { bars: [], tools: [], languages: [] },
     links: [],
   };
   $$("#projectGrid [data-proj]").forEach((card) => {
@@ -227,6 +366,20 @@ function collectDraft() {
       status: get("status"), statusLabel: get("statusLabel"), tag: get("tag"),
     });
   });
+  $$("#eduList [data-edu]").forEach((card) => {
+    const get = (f) => { const el = card.querySelector(`[data-ef="${f}"]`); return el ? el.value : ""; };
+    draft.education.push({
+      id: card.dataset.edu,
+      school: get("school"), level: get("level"), period: get("period"), note: get("note"),
+    });
+  });
+  $$("#skillBars [data-bar]").forEach((row) => {
+    const get = (f) => { const el = row.querySelector(`[data-sf="${f}"]`); return el ? el.value : ""; };
+    draft.skills.bars.push({ id: row.dataset.bar, label: get("label"), pct: get("pct") });
+  });
+  const splitLines = (el) => (el ? el.value : "").split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
+  draft.skills.tools = splitLines($("#toolsInput"));
+  draft.skills.languages = splitLines($("#langsInput"));
   $$("#linkList [data-link]").forEach((row) => {
     const get = (f) => { const el = row.querySelector(`[data-lf="${f}"]`); return el ? el.value : ""; };
     draft.links.push({ id: row.dataset.link, label: get("label"), url: get("url"), kind: "tautan" });

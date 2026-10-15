@@ -10,47 +10,143 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&display=swap">
-<link rel="stylesheet" href="styles.css?v=pionir1">
+<link rel="stylesheet" href="styles.css?v=pionir2">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="./" id="brandName">Portofolio Giwa</a>
+  <a class="brand" href="./"><span class="brand-dot" aria-hidden="true"></span><span class="brand-text"><span id="brandName">Portofolio Giwa</span><small>PORTOFOLIO PRIBADI</small></span></a>
   <nav>
-    <a href="#proyek">Proyek</a>
     <a href="#tentang">Tentang</a>
+    <a href="#pendidikan">Pendidikan</a>
+    <a href="#proyek">Proyek</a>
+    <a href="#keahlian">Keahlian</a>
     <a href="#kontak">Kontak</a>
     <button id="accountBtn" type="button" class="hidden">Masuk Pemilik</button>
   </nav>
 </header>
 
-<main class="container">
+<main>
+  <!-- ================= HERO (adegan ala mockup Kirana) ================= -->
   <section class="hero">
-    <p class="kicker">Portofolio</p>
-    <h1 id="ownerName">Giwa — Arkasha Brainley Illyria</h1>
-    <p class="tagline" id="tagline"></p>
-  </section>
-
-  <section id="proyek">
-    <h2>Proyek</h2>
-    <div id="ownerBar" class="owner-bar hidden"></div>
-    <div id="projectGrid" class="grid" aria-live="polite">
-      <p class="loading">Memuat proyek…</p>
+    <svg class="bird left" viewBox="0 0 120 80" fill="none" aria-hidden="true">
+      <path d="M8 52 Q34 30 58 44 Q44 34 30 36 Q50 22 74 30 Q96 12 112 14 Q96 24 88 36 Q104 34 110 40 Q88 46 74 58 Q46 66 8 52Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="98" cy="24" r="3.4" fill="#4b2a18"/>
+    </svg>
+    <svg class="bird right" viewBox="0 0 120 80" fill="none" aria-hidden="true">
+      <path d="M8 52 Q34 30 58 44 Q44 34 30 36 Q50 22 74 30 Q96 12 112 14 Q96 24 88 36 Q104 34 110 40 Q88 46 74 58 Q46 66 8 52Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="98" cy="24" r="3.4" fill="#4b2a18"/>
+    </svg>
+    <svg class="star s1" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39Z" fill="#ffe029" stroke="#4b2a18" stroke-width="3"/></svg>
+    <svg class="star s2" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39Z" fill="#f58124" stroke="#4b2a18" stroke-width="3"/></svg>
+    <div class="hero-inner">
+      <span class="hero-badge">✦ PORTOFOLIO ✦</span>
+      <h1 id="ownerName">Giwa — Arkasha Brainley Illyria</h1>
+      <p class="tagline" id="tagline"></p>
+      <div class="hero-cta">
+        <a class="btn pill orange" href="#proyek">Lihat Proyek</a>
+        <a class="btn pill ghost" href="#tentang">Tentang Saya</a>
+      </div>
     </div>
+    <div class="mat" aria-hidden="true"></div>
   </section>
 
-  <section id="tentang">
-    <h2>Tentang</h2>
-    <p id="aboutText" class="about"></p>
-  </section>
+  <div class="container">
+    <div id="ownerBar" class="owner-bar hidden"></div>
 
-  <section id="kontak">
-    <h2>Kontak &amp; Tautan</h2>
-    <ul id="linkList" class="links"></ul>
-  </section>
+    <!-- ================= TENTANG ================= -->
+    <section id="tentang">
+      <span class="kicker">Tentang Saya</span>
+      <h2 class="sec">Halo, Kenalin!</h2>
+      <div class="about-grid">
+        <div class="panel accent-blue">
+          <div class="portrait">
+            <svg viewBox="0 0 200 190" fill="none" aria-hidden="true">
+              <circle cx="100" cy="66" r="34" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/>
+              <path d="M52 190 Q56 118 100 118 Q144 118 148 190Z" fill="#f58124" stroke="#4b2a18" stroke-width="4"/>
+              <path d="M66 52 Q100 18 134 52 Q120 34 100 36 Q80 34 66 52Z" fill="#4b2a18"/>
+              <circle cx="88" cy="64" r="3.6" fill="#4b2a18"/><circle cx="112" cy="64" r="3.6" fill="#4b2a18"/>
+              <path d="M90 80 Q100 88 110 80" stroke="#4b2a18" stroke-width="3.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="panel accent-brand">
+          <h3 class="panel-title">Cerita Singkat</h3>
+          <p id="aboutText" class="about"></p>
+          <div class="facts" id="aboutFacts"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PENDIDIKAN ================= -->
+    <section id="pendidikan">
+      <span class="kicker">Riwayat Sekolah</span>
+      <h2 class="sec">Pendidikan</h2>
+      <div id="eduList" class="edu-list" aria-live="polite">
+        <p class="loading">Memuat pendidikan…</p>
+      </div>
+    </section>
+
+    <!-- ================= PROYEK ================= -->
+    <section id="proyek">
+      <span class="kicker">Portofolio</span>
+      <h2 class="sec">Proyek Pilihan</h2>
+      <div id="projectGrid" class="grid" aria-live="polite">
+        <p class="loading">Memuat proyek…</p>
+      </div>
+    </section>
+
+    <!-- ================= KEAHLIAN ================= -->
+    <section id="keahlian">
+      <span class="kicker">Keahlian</span>
+      <h2 class="sec">Yang Bisa Saya Lakukan</h2>
+      <div class="skills-grid">
+        <div class="panel accent-green">
+          <div id="skillBars"></div>
+        </div>
+        <div class="panel accent-blue">
+          <h3 class="panel-title">Alat &amp; Teknologi</h3>
+          <div class="chips" id="skillTools"></div>
+          <h3 class="panel-title" style="margin-top:1.2rem">Bahasa</h3>
+          <div class="chips" id="skillLangs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= KONTAK ================= -->
+    <section id="kontak">
+      <div class="panel accent-brand">
+        <div class="contact-panel">
+          <span class="kicker">Kontak</span>
+          <h2 class="sec">Mari Bekerja Sama!</h2>
+          <p class="contact-lead">Terbuka untuk kolaborasi, proyek alat belajar, dan obrolan seputar psikologi &amp; teknologi pendidikan.</p>
+          <ul id="linkList" class="links"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
 </main>
 
 <footer class="footer">
-  <p><span id="footName">Portofolio Giwa</span> · Dibangun &amp; disunting langsung oleh pemiliknya.</p>
+  <div class="foot-word" id="footName">Portofolio Giwa</div>
+  <div class="foot-grid">
+    <div>
+      <h4>Tentang</h4>
+      <p id="footTagline"></p>
+    </div>
+    <div>
+      <h4>Eksplorasi</h4>
+      <a href="#tentang">Tentang</a>
+      <a href="#pendidikan">Pendidikan</a>
+      <a href="#proyek">Proyek</a>
+      <a href="#keahlian">Keahlian</a>
+      <a href="#kontak">Kontak</a>
+    </div>
+    <div>
+      <h4>Kontak</h4>
+      <div id="footLinks"></div>
+    </div>
+  </div>
+  <p class="foot-note">Dibangun &amp; disunting langsung oleh pemiliknya.</p>
 </footer>
 
 <div id="authModal" class="modal hidden" role="dialog" aria-modal="true">
@@ -71,11 +167,11 @@
   </div>
 </div>
 
-<script src="core.js?v=pionir1"></script>
+<script src="core.js?v=pionir2"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=pionir1"></script>
-<script src="app.js?v=pionir1"></script>
+<script src="firebase-config.js?v=pionir2"></script>
+<script src="app.js?v=pionir2"></script>
 </body>
 </html>

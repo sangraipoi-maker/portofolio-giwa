@@ -43,7 +43,6 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  padding-top: 4.6rem; /* ruang untuk header pil melayang */
   font-family: "DM Sans", Arial, Helvetica, sans-serif;
   background: var(--paper);
   color: var(--ink);
@@ -57,16 +56,20 @@ a { color: var(--brand-dark); }
 /* ---------- header pil melayang (fixed, ala PIONIR) ---------- */
 .topbar {
   position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 20;
-  width: min(1024px, calc(100% - 1.5rem));
+  width: min(72rem, calc(100% - 1.5rem));
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: .55rem 1.15rem;
   background: rgba(255, 253, 243, .94);
-  border: 1px solid var(--paper-dim);
+  border: 2px solid var(--brown);
   border-radius: 999px;
-  box-shadow: 0 10px 30px #2323231a;
+  box-shadow: 0 6px #23232338, 0 10px 30px #2323231a;
   backdrop-filter: blur(8px);
 }
-.brand { font-size: 1.12rem; font-weight: 800; letter-spacing: -.01em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: .6rem; font-size: 1.12rem; font-weight: 800; letter-spacing: -.01em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.brand-dot { width: 2rem; height: 2rem; flex: none; background: var(--brand); clip-path: polygon(50% 0, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0 50%, 37% 37%); }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-text small { font-size: .62rem; font-weight: 700; letter-spacing: .16em; color: var(--muted); }
+@media (max-width: 760px) { .brand-text small { display: none; } .topbar nav a { display: none; } .topbar nav a[href="#kontak"] { display: inline-block; } }
 .topbar nav { display: flex; align-items: center; gap: .35rem; }
 .topbar nav a { color: var(--ink-soft); text-decoration: none; font-size: .95rem; font-weight: 500; padding: .3rem .65rem; border-radius: 999px; transition: background .2s var(--ease-out), color .2s var(--ease-out); }
 .topbar nav a:hover { color: var(--brown-deep); background: #ffcda3; }
@@ -76,42 +79,120 @@ a { color: var(--brand-dark); }
   .topbar nav a { font-size: .86rem; padding: .25rem .45rem; }
 }
 
-.container { max-width: 960px; margin: 0 auto; padding: .6rem 1rem 3rem; }
-section { scroll-margin-top: 6.5rem; }
+.container { max-width: 72rem; margin: 0 auto; padding: .6rem 1.2rem 3rem; }
+section { scroll-margin-top: 6.5rem; padding-top: 2.2rem; }
 
-/* ---------- hero: panel berbingkai kuning, sudut terpotong ---------- */
+/* ---------- hero: adegan langit ala mockup (gradasi + anyaman + bangau + tikar) ---------- */
 .hero {
   position: relative;
-  margin-top: .4rem;
-  padding: 2.5rem 1.7rem 2.3rem;
-  background: var(--yellow);
-  clip-path: var(--poly);
+  padding: 8rem 1.2rem 7rem;
+  background: radial-gradient(circle at 50% 32%, rgba(255,254,238,.95) 0%, rgba(196,242,250,.55) 42%, rgba(129,219,247,.75) 78%, rgba(144,221,246,.9) 100%);
+  overflow: hidden;
+  text-align: center;
 }
-.hero::before {
+.hero::before { /* pola anyaman halus di atas langit */
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(87,48,25,.05) 1px, transparent 1px),
+    linear-gradient(rgba(87,48,25,.05) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.hero-inner { position: relative; z-index: 1; max-width: 56rem; margin: 0 auto; }
+.hero-badge {
+  display: inline-block; background: var(--paper); border: 2px solid var(--brown);
+  font-weight: 700; font-size: .78rem; letter-spacing: .16em; color: var(--brown);
+  padding: .35rem 1rem; border-radius: 999px; box-shadow: var(--button-shadow-sm);
+}
+h1 {
+  font-size: clamp(2.4rem, 7.5vw, 4.6rem); font-weight: 900; letter-spacing: .005em; line-height: 1.05;
+  color: var(--brown-deep); margin: 1.1rem 0 .4rem;
+  text-shadow: .045em .045em 0 var(--yellow), .09em .09em 0 rgba(245,129,36,.55);
+}
+.tagline { font-size: clamp(1.02rem, 2.4vw, 1.3rem); font-weight: 500; color: #43302a; max-width: 38rem; margin: 1rem auto 0; }
+.hero-cta { display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; margin-top: 1.9rem; }
+.btn.pill { border-radius: 999px; border: 2px solid var(--brown); padding: .62rem 1.35rem; }
+.btn.orange { background: var(--brand); color: #fff; }
+.bird { position: absolute; width: 120px; z-index: 1; animation: sway 7.6s cubic-bezier(.45,0,.55,1) infinite; }
+.bird.left { left: 4%; top: 16%; }
+.bird.right { right: 4%; top: 22%; animation-name: swayR; animation-delay: -3s; }
+@keyframes sway { 0%,100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2.5deg) translateY(-12px); } }
+@keyframes swayR { 0%,100% { transform: scaleX(-1) rotate(-2deg) translateY(0); } 50% { transform: scaleX(-1) rotate(2.5deg) translateY(-12px); } }
+.bird.right { transform: scaleX(-1); }
+.star { position: absolute; z-index: 1; animation: spin 24s linear infinite; }
+.star.s1 { left: 12%; bottom: 18%; width: 44px; }
+.star.s2 { right: 14%; bottom: 26%; width: 30px; animation-direction: reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.mat {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 54px; z-index: 1;
+  background: repeating-linear-gradient(45deg, #ffcda3 0 14px, var(--yellow-soft) 14px 28px);
+  border-top: 3px solid var(--brown);
+  clip-path: polygon(0 38%, 100% 0, 100% 100%, 0 100%);
+  opacity: .9;
+}
+@media (max-width: 700px) { .bird { width: 74px; } .bird.left { left: 2%; } .bird.right { right: 2%; } .hero { padding: 6.5rem 1rem 6rem; } }
+
+/* ---------- label bagian: chip kicker + judul besar (pola mockup) ---------- */
+.kicker {
+  display: inline-block; font-weight: 800; font-size: .74rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--brown-deep); background: var(--yellow-soft);
+  padding: .32rem .9rem; clip-path: var(--poly-s);
+}
+h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; }
+h2.sec { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 800; color: var(--brown-deep); margin: .8rem 0 1.4rem; letter-spacing: -.01em; }
+p.lead { color: var(--ink-soft); max-width: 38rem; margin: -.6rem 0 1.4rem; }
+
+/* ---------- panel berbingkai dua lapis (generik, sejawat kartu) ---------- */
+.panel {
+  --panel-accent: var(--brand);
+  position: relative;
+  background: var(--panel-accent);
+  clip-path: var(--poly);
+  padding: 1.4rem 1.5rem;
+}
+.panel::before {
   content: ""; position: absolute; inset: 4px;
-  background: var(--paper);
+  background: var(--card);
   clip-path: var(--poly-in);
 }
-.hero > * { position: relative; z-index: 1; }
-.kicker { text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; color: var(--brand-dark); margin: 0 0 .4rem; font-weight: 800; }
-h1 { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -.015em; line-height: 1.15; margin: .2rem 0 .6rem; }
-.tagline { font-size: 1.1rem; font-weight: 500; color: var(--ink-soft); max-width: 42rem; margin: 0; }
+.panel > * { position: relative; z-index: 1; }
+.accent-brand { --panel-accent: var(--brand); }
+.accent-blue { --panel-accent: var(--blue); }
+.accent-green { --panel-accent: var(--green); }
+.panel-title { font-size: 1.2rem; font-weight: 800; color: var(--brown-deep); margin: 0 0 .6rem; }
 
-/* ---------- judul bagian dengan chip oktagon ---------- */
-h2 {
-  font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em;
-  margin: 2.4rem 0 1rem; display: flex; align-items: center; gap: .65rem;
-}
-h2::before { content: ""; flex: none; width: .9rem; height: .9rem; background: var(--brand); clip-path: var(--octagon); }
-#tentang h2::before { background: var(--purple); }
-#kontak h2::before { background: var(--blue); }
-
-.about { max-width: 44rem; color: var(--ink-soft); white-space: pre-wrap; font-size: 1.02rem; }
+.about { color: var(--ink-soft); white-space: pre-wrap; font-size: 1.02rem; margin: 0; }
 .loading { color: var(--muted); }
 
+/* ---------- tentang: grid potret + cerita + fakta (pola mockup) ---------- */
+.about-grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .about-grid { grid-template-columns: 5fr 7fr; } }
+.portrait {
+  min-height: 280px; height: 100%; display: flex; align-items: flex-end; justify-content: center;
+  background: linear-gradient(180deg, var(--yellow-soft), #ffcda3);
+  overflow: hidden;
+}
+.portrait svg { width: 72%; max-width: 300px; display: block; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-top: 1.2rem; text-align: center; }
+.fact { background: #fff8dc; border: 2px solid var(--paper-dim); padding: .7rem .3rem; }
+.fact b { display: block; font-size: 1.3rem; color: var(--brand-dark); }
+.fact span { font-size: .68rem; letter-spacing: .08em; color: var(--ink-soft); font-weight: 700; text-transform: uppercase; }
+
 /* ---------- kartu proyek: sudut terpotong + bingkai dua lapis + aksen bertema ---------- */
-.grid { display: grid; grid-template-columns: 1fr; gap: 1.15rem; }
-@media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
+.grid { display: grid; grid-template-columns: 1fr; gap: 1.4rem; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+/* pita gambar kartu proyek + chip kategori (pola mockup) */
+.card .thumb {
+  height: 132px; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--card-accent) 22%, var(--paper));
+  margin: -.35rem -.45rem .6rem;
+}
+.card .tags { display: flex; gap: .45rem; flex-wrap: wrap; margin-top: .2rem; }
+.card .tag {
+  font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  padding: .22rem .6rem; border: 1.5px solid var(--brown); color: var(--brown);
+  background: var(--paper); clip-path: var(--poly-s);
+}
 .card {
   --card-accent: var(--brand);
   position: relative;
@@ -155,16 +236,68 @@ h2::before { content: ""; flex: none; width: .9rem; height: .9rem; background: v
 .card .visit:hover { transform: translateY(-2px); text-decoration: none; }
 .card .visit:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--brand-deepest); }
 
+/* ---------- pendidikan: daftar kartu sekeluarga kartu proyek ---------- */
+.edu-list { display: grid; grid-template-columns: 1fr; gap: 1.15rem; }
+#eduList .card:nth-child(5n+1) { --card-accent: var(--brand); }
+#eduList .card:nth-child(5n+2) { --card-accent: var(--blue); }
+#eduList .card:nth-child(5n+3) { --card-accent: var(--green); }
+#eduList .card:nth-child(5n+4) { --card-accent: var(--purple); }
+#eduList .card:nth-child(5n+5) { --card-accent: var(--pink); }
+#eduList .card:hover { transform: translateY(-4px); }
+.badge.period { background: var(--yellow-soft); color: #8a5312; }
+
+/* ---------- keahlian: bar berbingkai + chip terpotong (pola mockup) ---------- */
+.skills-grid { display: grid; gap: 1.4rem; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+.skill-row { margin-bottom: 1.05rem; }
+.skill-row:last-child { margin-bottom: 0; }
+.skill-row .lbl { display: flex; justify-content: space-between; font-weight: 700; font-size: .9rem; margin-bottom: .35rem; }
+.bar { height: 16px; border: 2px solid var(--brown); background: var(--paper); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 999px; background: var(--brand); }
+#skillBars .skill-row:nth-child(4n+1) .bar i { background: var(--green); }
+#skillBars .skill-row:nth-child(4n+2) .bar i { background: var(--blue); }
+#skillBars .skill-row:nth-child(4n+3) .bar i { background: var(--purple); }
+#skillBars .skill-row:nth-child(4n+4) .bar i { background: var(--pink); }
+.chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+.chip {
+  font-weight: 700; font-size: .82rem; padding: .4rem .9rem;
+  border: 2px solid var(--brown); background: var(--paper); color: var(--ink);
+  box-shadow: var(--button-shadow-sm); clip-path: var(--poly-s);
+  transition: transform .18s var(--ease-out);
+}
+.chip:hover { transform: translateY(-3px); }
+
+/* ---------- kontak: panel tengah ala mockup ---------- */
+.contact-panel { text-align: center; padding: 1rem .5rem; }
+.contact-panel h2.sec { margin-bottom: .4rem; }
+.contact-lead { color: var(--ink-soft); max-width: 32rem; margin: 0 auto 1.6rem; }
+
 /* ---------- daftar tautan: kartu terpotong bingkai netral, aksen saat hover ---------- */
-.links { list-style: none; padding: 0; margin: 0; display: grid; gap: .7rem; }
+.links { list-style: none; padding: 0; margin: 0 auto; display: grid; gap: .7rem; max-width: 34rem; text-align: left; }
 .links li { position: relative; background: var(--paper-dim); clip-path: var(--poly-s); transition: transform .25s var(--ease-out); }
 .links li::before { content: ""; position: absolute; inset: 3px; background: var(--card); clip-path: var(--poly-s-in); }
 .links li:hover { transform: translateY(-2px); background: var(--brand); }
 .links a { position: relative; z-index: 1; display: block; padding: .75rem 1rem; text-decoration: none; color: var(--ink); font-weight: 700; }
 .links a:hover { color: var(--brand-dark); }
 
-.footer { border-top: 1px solid var(--paper-dim); padding: 1.4rem 1rem 2.2rem; text-align: center; color: var(--muted); font-size: .92rem; }
-.footer #footName { font-weight: 800; color: var(--ink); }
+/* ---------- footer gelap + wordmark raksasa (pola mockup) ---------- */
+.footer { margin-top: 4rem; background: var(--brown-deep); color: var(--paper); overflow: hidden; }
+.foot-word {
+  font-weight: 900; text-align: center; line-height: .95;
+  font-size: clamp(2.4rem, 10vw, 7rem); letter-spacing: .01em;
+  color: var(--paper); opacity: .97; padding: 2.4rem 1rem .4rem;
+}
+.foot-grid {
+  max-width: 72rem; margin: 0 auto; padding: 1.6rem 1.2rem 2.2rem;
+  display: grid; gap: 1.6rem; grid-template-columns: 1fr;
+  border-top: 1px solid rgba(255,253,243,.25);
+}
+@media (min-width: 800px) { .foot-grid { grid-template-columns: 2fr 1fr 1fr; } }
+.footer h4 { font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--yellow); margin: 0 0 .7rem; }
+.footer p, .footer a { font-size: .9rem; color: rgba(255,253,243,.85); }
+.footer a { display: block; text-decoration: none; margin-bottom: .35rem; }
+.footer a:hover { color: var(--yellow); }
+.foot-note { text-align: center; font-size: .8rem; letter-spacing: .06em; padding: 0 1rem 1.8rem; color: rgba(255,253,243,.55); margin: 0; }
 
 /* ---------- tombol & formulir ---------- */
 .btn {

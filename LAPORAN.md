@@ -83,3 +83,49 @@ Yang ditiru bahasa desainnya — bukan aset/teks PIONIR/UGM:
   Uji: 65 lulus, 0 gagal (52 lama + 13 statis baru untuk token/gaya PIONIR).
   Aset di `index.html` diberi query versi `?v=pionir1` agar pengunjung lama
   tidak terjebak cache gaya lama di GitHub Pages.
+
+## Penyelarasan komposisi mockup Kirana + bagian Pendidikan (Damar🦫, 2026-10-16)
+
+Atas perintah Arkasha ("terapin kayak gitu" sambil membuka lagi mockup asli
+Kirana `pratinjau-portofolio-pionir.html`, 11 Okt) + tambahan kolom sekolah:
+
+- **Komposisi disamakan ke mockup** (mockup menang soal susunan; data live
+  menang soal isi — tidak ada lorem ipsum yang kembali):
+  urutan bagian kini nav → hero → **Tentang → Pendidikan → Proyek → Keahlian
+  → Kontak → footer**. Elemen khas mockup yang sebelumnya belum ada kini
+  diterapkan: hero adegan langit (lencana pil, judul raksasa berbayangan
+  berlapis kuning/oranye, dua tombol pil, burung bangau & bintang SVG generik
+  beranimasi, pola anyaman, tikar anyaman miring di dasar hero); label bagian
+  pola chip kicker + judul besar; Tentang jadi dua panel berbingkai (potret
+  SVG generik + cerita) dengan deret fakta yang **dihitung dari konten**
+  (jumlah proyek, situs live, UGM); kartu proyek dapat pita gambar glif SVG
+  bergilir + chip kategori di kaki kartu, grid melebar 3 kolom pada layar
+  besar (kontainer 72rem seperti bungkus mockup); Kontak jadi panel tengah;
+  footer jadi gelap cokelat dengan wordmark raksasa + grid 3 kolom
+  (Tentang/Eksplorasi/Kontak dari data tautan).
+- **Keahlian kini bagian sungguhan** (di mockup ada, di live sebelumnya
+  belum): bar berlabel + persen dan dua kelompok chip (Alat & Teknologi,
+  Bahasa), tersimpan di dokumen konten yang sama dan bisa disunting pemilik
+  (bar: tambah/edit/hapus/urut; chip: satu per baris). Bekal awalnya
+  konservatif dari proyek yang benar-benar tayang (HTML & CSS, JavaScript,
+  Firebase, Git & GitHub, GitHub Pages, OpenStreetMap) — pemilik bebas
+  mengubah angka & isinya.
+- **Bagian baru "Pendidikan"** (sesudah Tentang): daftar entri sekolah
+  (nama, jenjang/keterangan, periode, catatan) dirender sebagai kartu
+  sekeluarga kartu proyek. Tersimpan di dokumen Firestore `site/content`
+  yang sama (bidang `education`), jadi ikut fallback bawaan, ikut gerbang
+  pemilik/rules yang sama, dan ikut tercadangkan ke `history/` tiap simpan.
+  Mode edit: tambah/edit/hapus/naik/turun persis pola kartu proyek.
+  **Bekal awal hanya yang terverifikasi:** satu entri "Universitas Gadjah
+  Mada — Fakultas Psikologi" dengan periode SENGAJA dikosongkan; tidak ada
+  tahun atau nama sekolah lain yang dikarang — Arkasha tinggal mengisi
+  riwayat sebenarnya lewat mode edit.
+- Yang TIDAK berubah: alamat live, `firestore.rules` & mekanisme
+  klaim/pemilik, konten proyek/kontak, bahasa desain PIONIR yang sudah
+  diterapkan. Versi aset dinaikkan `?v=pionir1` → `?v=pionir2`.
+- Uji: **86 lulus, 0 gagal** (65 lama tetap hijau + 21 baru: sanitasi &
+  logika Pendidikan, jepit persen & dedup Keahlian, urutan bagian &
+  kehadiran wadah secara statis). Pemeriksaan silang otomatis: seluruh 36
+  id yang dirujuk `app.js` teratasi di HTML / dibuat dinamis oleh app.js.
+  Verifikasi live: isi berkas tersaji di alamat live diperiksa sesudah
+  deploy (lihat catatan rilis di bawah).

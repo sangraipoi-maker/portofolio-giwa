@@ -91,6 +91,36 @@ const hist = C.makeHistoryEntry(docA, "uid-pemilik", 12345);
 t("riwayat: stempel waktu & pemilik tercatat", hist.savedAt === 12345 && hist.ownerUid === "uid-pemilik");
 t("riwayat: isi tersanitasi & salinan dalam", hist.content.projects.length === 4 && hist.content !== docA);
 
+/* ---------- pendidikan (bagian baru 2026-10-16) ---------- */
+t("pendidikan: bawaan tepat 1 entri terverifikasi UGM Psikologi",
+  D.education.length === 1 && D.education[0].school === "Universitas Gadjah Mada" && /Psikologi/.test(D.education[0].level));
+t("pendidikan: periode bawaan kosong (tidak dikarang)", D.education[0].period === "");
+t("pendidikan: sanitasi mempertahankan entri sah & memotong bidang",
+  (() => { const e = C.sanitizeContent({ education: [{ id: "x", school: "  SMA Contoh  ", level: "SMA", period: "2019 — 2022", note: "n".repeat(999) }] }).education;
+    return e.length === 1 && e[0].school === "SMA Contoh" && e[0].note.length === C.MAX.eduNote; })());
+t("pendidikan: entri tanpa nama sekolah dibuang",
+  C.sanitizeContent({ education: [{ school: "  " }, { school: "Ada" }] }).education.length === 1);
+t("pendidikan: bukan array -> bawaan; array kosong dihormati",
+  C.sanitizeContent({ education: "rusak" }).education.length === 1 && C.sanitizeContent({ education: [] }).education.length === 0);
+t("pendidikan: urut & hapus bekerja pada daftar tersanitasi",
+  (() => { const es = C.sanitizeContent({ education: [{ school: "A" }, { school: "B" }, { school: "C" }] }).education;
+    return eq(C.moveItem(es, es[1].id, "up").map((x) => x.school), ["B", "A", "C"]) &&
+           eq(C.removeItem(es, es[1].id).map((x) => x.school), ["A", "C"]); })());
+t("pendidikan: id baru prefiks sekolah tidak tabrakan",
+  C.makeId("sekolah", [{ id: "sekolah-1" }]) === "sekolah-2");
+t("pendidikan: ikut tersimpan di entri riwayat",
+  C.makeHistoryEntry({ ...D, ownerUid: "u" }, "u", 1).content.education.length === 1);
+
+/* ---------- keahlian (bagian baru 2026-10-16) ---------- */
+t("keahlian: bawaan punya bar, alat (termasuk Firebase) & bahasa",
+  D.skills.bars.length >= 3 && D.skills.tools.includes("Firebase") && D.skills.languages.length >= 1);
+t("keahlian: persen dijepit 0..100 & dibulatkan",
+  (() => { const bs = C.sanitizeContent({ skills: { bars: [{ label: "X", pct: 250 }, { label: "Y", pct: -5 }, { label: "Z", pct: "62.6" }] } }).skills.bars;
+    return bs[0].pct === 100 && bs[1].pct === 0 && bs[2].pct === 63; })());
+t("keahlian: bar tanpa label dibuang; chip didedup & bukan array -> bawaan",
+  (() => { const s = C.sanitizeContent({ skills: { bars: [{ label: " " }], tools: ["A", "A", " B "], languages: "rusak" } }).skills;
+    return s.bars.length === 0 && eq(s.tools, ["A", "B"]) && s.languages.length === D.skills.languages.length; })());
+
 /* ---------- pemeriksaan statis rules & konfigurasi ---------- */
 const rules = readFileSync(join(root, "firestore.rules"), "utf8");
 t("rules: konten publik boleh baca", /match \/site\/content \{[\s\S]*?allow read: if true;/.test(rules));
@@ -123,8 +153,33 @@ t("pionir: tombol 3D bayangan offset keras tanpa blur", css.includes("--button-s
 t("pionir: font tunggal DM Sans", css.includes('"DM Sans"') && indexHtml.includes("family=DM+Sans"));
 t("pionir: header pil melayang fixed", /\.topbar \{[^}]*position: fixed/.test(css) && /\.topbar \{[^}]*border-radius: 999px/.test(css));
 t("pionir: scroll-reveal .rv/.rv-in + reduced-motion dihormati", css.includes(".rv.rv-in") && css.includes("prefers-reduced-motion: reduce"));
-t("pionir: aset berversi anti-cache basi di index", indexHtml.includes("styles.css?v=pionir1") && indexHtml.includes("app.js?v=pionir1"));
+t("pionir: aset berversi anti-cache basi di index", indexHtml.includes("styles.css?v=pionir2") && indexHtml.includes("app.js?v=pionir2"));
 t("pionir: reveal memakai IntersectionObserver vanilla di app.js", appJs.includes("IntersectionObserver") && appJs.includes("initReveal") && appJs.includes('matchMedia("(prefers-reduced-motion: reduce)")'));
+
+/* ---------- komposisi mockup Kirana + bagian Pendidikan (2026-10-16) ---------- */
+const pos = (s) => indexHtml.indexOf(s);
+t("komposisi: urutan bagian tentang < pendidikan < proyek < keahlian < kontak",
+  pos('id="tentang"') > -1 && pos('id="tentang"') < pos('id="pendidikan"') && pos('id="pendidikan"') < pos('id="proyek"') &&
+  pos('id="proyek"') < pos('id="keahlian"') && pos('id="keahlian"') < pos('id="kontak"'));
+t("komposisi: nav memuat tautan pendidikan & keahlian",
+  indexHtml.includes('href="#pendidikan"') && indexHtml.includes('href="#keahlian"'));
+t("komposisi: wadah pendidikan & keahlian ada di HTML",
+  indexHtml.includes('id="eduList"') && indexHtml.includes('id="skillBars"') && indexHtml.includes('id="skillTools"') && indexHtml.includes('id="skillLangs"'));
+t("komposisi: hero adegan mockup (lencana, burung, bintang, tikar)",
+  indexHtml.includes("hero-badge") && indexHtml.includes('class="bird left"') && indexHtml.includes('class="star s1"') && indexHtml.includes('class="mat"'));
+t("komposisi: tentang dua panel + footer wordmark raksasa & grid",
+  indexHtml.includes('class="about-grid"') && indexHtml.includes('id="aboutFacts"') &&
+  indexHtml.includes('class="foot-word"') && indexHtml.includes('class="foot-grid"') && indexHtml.includes('id="footLinks"'));
+t("app: pendidikan dirender publik & formulir editnya ada",
+  appJs.includes("content.education") && appJs.includes('data-edu') && appJs.includes('data-ef="school"') && appJs.includes('id="addEduBtn"') || appJs.includes("addEduBtn"));
+t("app: keahlian dirender publik & formulir editnya ada",
+  appJs.includes("content.skills.bars") && appJs.includes('data-bar') && appJs.includes('id="toolsInput"') && appJs.includes('id="langsInput"'));
+t("app: draf edit mengumpulkan pendidikan & keahlian",
+  appJs.includes("draft.education") && appJs.includes("draft.skills"));
+t("css: pola mockup — chip kicker, bar keahlian, panel, footer gelap, grid tentang",
+  css.includes(".kicker") && css.includes(".bar") && css.includes(".panel") && css.includes(".foot-word") && css.includes(".about-grid") && css.includes(".skills-grid"));
+t("css: hero langit gradasi + animasi bangau/bintang ala mockup",
+  css.includes("radial-gradient") && css.includes("@keyframes sway") && css.includes("@keyframes spin") && css.includes(".mat"));
 
 console.log(`\nHasil uji portofolio: ${pass} lulus, ${fail} gagal`);
 process.exit(fail ? 1 : 0);

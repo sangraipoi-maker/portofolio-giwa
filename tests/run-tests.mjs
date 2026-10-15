@@ -140,21 +140,46 @@ t("app: fallback dirender sebelum Firebase", appJs.indexOf("renderView();") > -1
 t("app: mode edit digerbang isOwner/klaim", appJs.includes("C.isOwner(contentDoc, user.uid)") && appJs.includes("renderEdit"));
 t("app: simpan menulis site/content + riwayat", appJs.includes('doc("site/content")') && appJs.includes('collection("history")'));
 
-/* ---------- bahasa desain PIONIR (perapian visual 2026-10-16) ---------- */
+/* ---------- KESETIAAN MOCKUP Kirana (porting 2026-10-16) ----------
+ * Acuan tunggal: ~/workspace/pratinjau-portofolio-pionir.html.
+ * Blok ini menggantikan assertion "bahasa desain PIONIR" versi tafsir
+ * (yang sempat mengkodekan nilai salah tafsir, mis. --brown-deep #461a0c);
+ * sekarang semua nilai yang diuji = nilai mockup persis. */
 const css = readFileSync(join(root, "public", "styles.css"), "utf8");
-t("pionir: latar krem kertas #fffdf3", css.includes("--paper: #fffdf3"));
-t("pionir: teks tergelap #232323 & cokelat komponen", css.includes("--ink: #232323") && css.includes("--brown: #4b2a18") && css.includes("--brown-deep: #461a0c"));
-t("pionir: oranye jangkar #f58124 & kuning #ffe029", css.includes("--brand: #f58124") && css.includes("--yellow: #ffe029"));
-t("pionir: keluarga aksen per kartu lengkap", ["#3dc7f2", "#45e1b1", "#902ef5", "#f76f96"].every((h) => css.includes(h)));
-t("pionir: token sudut terpotong --container-cut + clip-path polygon", css.includes("--container-cut:") && css.includes("clip-path: var(--poly)") && /--poly: polygon\(/.test(css));
-t("pionir: bingkai dua lapis (lapis dalam --poly-in via ::before)", css.includes("--poly-in: polygon(") && /\.card::before/.test(css) && /\.hero::before/.test(css));
-t("pionir: aksen kartu berganti via nth-child + variabel --card-accent", css.includes("--card-accent") && /nth-child\(5n\+/.test(css));
-t("pionir: tombol 3D bayangan offset keras tanpa blur", css.includes("--button-shadow:") && /\.btn \{[^}]*box-shadow: var\(--button-shadow\)/.test(css) && /\.card \.visit \{[^}]*box-shadow: var\(--button-shadow\)/.test(css));
-t("pionir: font tunggal DM Sans", css.includes('"DM Sans"') && indexHtml.includes("family=DM+Sans"));
-t("pionir: header pil melayang fixed", /\.topbar \{[^}]*position: fixed/.test(css) && /\.topbar \{[^}]*border-radius: 999px/.test(css));
-t("pionir: scroll-reveal .rv/.rv-in + reduced-motion dihormati", css.includes(".rv.rv-in") && css.includes("prefers-reduced-motion: reduce"));
-t("pionir: aset berversi anti-cache basi di index", indexHtml.includes("styles.css?v=pionir2") && indexHtml.includes("app.js?v=pionir2"));
-t("pionir: reveal memakai IntersectionObserver vanilla di app.js", appJs.includes("IntersectionObserver") && appJs.includes("initReveal") && appJs.includes('matchMedia("(prefers-reduced-motion: reduce)")'));
+t("mockup: token warna inti persis", ["--paper:#fffdf3", "--paper-2:#fff8dc", "--ink:#232323", "--ink-soft:#4f4c4c", "--brown:#4b2a18", "--brown-deep:#3f2415", "--line:#e5e1d9"].every((s) => css.includes(s)));
+t("mockup: token warna aksen persis", ["--orange:#f58124", "--orange-deep:#f56e00", "--orange-soft:#ffcda3", "--yellow:#ffe029", "--yellow-soft:#fff3a9", "--blue:#3dc7f2", "--green:#45e1b1", "--purple:#902ef5", "--pink:#f76f96", "--red:#f20f50"].every((s) => css.includes(s)));
+t("mockup: token potongan --cut:1.1rem & --cut-sm:.7rem", css.includes("--cut:1.1rem") && css.includes("--cut-sm:.7rem"));
+t("mockup: pola .frame (padding 3px, clip-path var(--cut))", /\.frame\{[^}]*padding:3px/.test(css) && /\.frame\{[^}]*clip-path:polygon\(var\(--cut\)/.test(css));
+t("mockup: .frame > .inner (padding 1.4rem 1.5rem, potongan -3px)", css.includes(".frame > .inner") && /\.frame > \.inner\{[^}]*padding:1\.4rem 1\.5rem/.test(css) && css.includes("calc(var(--cut) - 3px)"));
+t("mockup: .lift hover naik -8px", /\.lift:hover\{transform:translateY\(-8px\)\}/.test(css));
+t("mockup: tombol pil kuning berbatas cokelat + bayangan keras rgba", /\.btn\{[^}]*background:var\(--yellow\)[^}]*border:2px solid var\(--brown\)[^}]*border-radius:999px[^}]*box-shadow:0 6px rgba\(70,26,12,\.35\)/.test(css));
+t("mockup: .btn.orange oranye & .btn.small bayangan 0 4px", /\.btn\.orange\{background:var\(--orange\)/.test(css) && /\.btn\.small\{[^}]*box-shadow:0 4px rgba\(70,26,12,\.35\)/.test(css));
+t("mockup: header wrapper fixed + .nav pil (batas cokelat, bayangan 0 6px rgba(35,35,35,.22))", /header\{[^}]*position:fixed/.test(css) && /\.nav\{[^}]*border:2px solid var\(--brown\)[^}]*border-radius:999px[^}]*box-shadow:0 6px rgba\(35,35,35,\.22\)/.test(css));
+t("mockup: nav max-width 72rem & tautan .86rem/700", /\.nav\{[^}]*max-width:72rem/.test(css) && /\.nav nav a\{[^}]*font-weight:700; font-size:\.86rem/.test(css));
+t("mockup: section padding 4.5rem 0 1rem & .wrap 72rem", /section\{padding:4\.5rem 0 1rem\}/.test(css) && /\.wrap\{max-width:72rem/.test(css));
+t("mockup: kicker kuning-soft BERBATAS cokelat + potongan cut-sm", /\.kicker\{[^}]*background:var\(--yellow-soft\)[^}]*border:2px solid var\(--brown\)/.test(css));
+t("mockup: h2.sec clamp(1.7rem,4vw,2.5rem) cokelat tua", /h2\.sec\{font-size:clamp\(1\.7rem,4vw,2\.5rem\); font-weight:800; color:var\(--brown-deep\)/.test(css));
+t("mockup: hero padding 8.5rem 0 5.5rem + gradasi langit persis", /\.hero\{[^}]*padding:8\.5rem 0 5\.5rem/.test(css) && css.includes("radial-gradient(circle at 50% 32%, rgba(255,254,238,.95) 0%, rgba(196,242,250,.55) 42%, rgba(129,219,247,.75) 78%, rgba(144,221,246,.9) 100%)"));
+t("mockup: anyaman 26px rgba(87,48,25,.045)", css.includes("background-size:26px 26px") && css.includes("rgba(87,48,25,.045)"));
+t("mockup: h1 hero clamp(2.6rem,8.5vw,5.2rem) lh 1.02 + bayangan lapis kuning/oranye", /\.hero h1\{[^}]*font-size:clamp\(2\.6rem,8\.5vw,5\.2rem\)[^}]*line-height:1\.02/.test(css) && css.includes("text-shadow:.045em .045em 0 var(--yellow), .09em .09em 0 rgba(245,129,36,.55)"));
+t("mockup: lencana hero pil berbayang 0 4px rgba(70,26,12,.3)", /\.hero \.badge\{[^}]*box-shadow:0 4px rgba\(70,26,12,\.3\)/.test(css));
+t("mockup: animasi bangau sway 7.6s + swayR & bintang spin 24s (keyframes ada)", css.includes("animation:sway 7.6s cubic-bezier(.45,0,.55,1) infinite") && css.includes("@keyframes swayR") && css.includes("animation:spin 24s linear infinite") && css.includes("@keyframes spin"));
+t("mockup: posisi bintang s1/s2 persis (bottom 14%/22%)", /\.star\.s1\{left:12%; bottom:14%; width:44px\}/.test(css) && /\.star\.s2\{right:14%; bottom:22%; width:30px/.test(css));
+t("mockup: tikar .mat 54px gradasi 45deg + potongan miring", /\.mat\{[^}]*height:54px[^}]*repeating-linear-gradient\(45deg, var\(--orange-soft\) 0 14px, var\(--yellow-soft\) 14px 28px\)/.test(css) && css.includes("clip-path:polygon(0 38%, 100% 0, 100% 100%, 0 100%)"));
+t("mockup: grid proyek 1/2/3 kolom di 640/1024", /\.grid\{[^}]*grid-template-columns:1fr/.test(css) && css.includes("min-width:640px") && css.includes("min-width:1024px"));
+t("mockup: thumb kartu 150px & margin -.4rem -.5rem 1rem", /\.proj \.thumb\{height:150px[^}]*margin:-\.4rem -\.5rem 1rem/.test(css));
+t("mockup: .proj h3 1.12rem & .proj p .9rem ink-soft", /\.proj h3\{font-size:1\.12rem/.test(css) && /\.proj p\{font-size:\.9rem; color:var\(--ink-soft\)\}/.test(css));
+t("mockup: chip .tag berbatas 1.5px + terpotong cut-sm", /\.tag\{[^}]*border:1\.5px solid var\(--brown\)/.test(css));
+t("mockup: bar keahlian tinggi 16px berbatas cokelat pil", /\.bar\{height:16px; border:2px solid var\(--brown\)[^}]*border-radius:999px/.test(css));
+t("mockup: chip keahlian bayangan 0 4px rgba(70,26,12,.28)", /\.chip\{[^}]*box-shadow:0 4px rgba\(70,26,12,\.28\)/.test(css));
+t("mockup: panel kontak padding 3rem 1.5rem & h2 clamp(1.8rem,4.5vw,2.7rem)", /\.contact-panel\{text-align:center; padding:3rem 1\.5rem\}/.test(css) && /\.contact-panel h2\{font-size:clamp\(1\.8rem,4\.5vw,2\.7rem\)/.test(css));
+t("mockup: socials kotak 46px terpotong berbayang", /\.socials a\{[^}]*width:46px; height:46px[^}]*box-shadow:0 4px rgba\(70,26,12,\.3\)/.test(css));
+t("mockup: footer margin-top 5rem bg brown-deep & wordmark clamp(3rem,11.5vw,8.5rem)", /footer\{margin-top:5rem; background:var\(--brown-deep\)/.test(css) && /\.foot-word\{[^}]*font-size:clamp\(3rem,11\.5vw,8\.5rem\)/.test(css));
+t("mockup: reveal .rv translateY(26px) .7s + .rv.zoom scale(.92) + .rv.on", /\.rv\{opacity:0; transform:translateY\(26px\); transition:opacity \.7s ease, transform \.7s cubic-bezier\(0,0,\.25,1\)\}/.test(css) && /\.rv\.zoom\{transform:scale\(\.92\)\}/.test(css) && css.includes(".rv.on"));
+t("mockup: reduced-motion mematikan rv & animasi bangau/bintang (bukan semua)", /prefers-reduced-motion: reduce\)\{\s*\.rv\{opacity:1; transform:none; transition:none\}\s*\.bird,\.star\{animation:none\}/.test(css));
+t("mockup: font DM Sans di tumpukan font", css.includes('--font:"DM Sans"') && indexHtml.includes("family=DM+Sans"));
+t("mockup: aset berversi pionir3 anti-cache basi di index", indexHtml.includes("styles.css?v=pionir3") && indexHtml.includes("app.js?v=pionir3") && indexHtml.includes("core.js?v=pionir3"));
+t("mockup: reveal memakai IntersectionObserver vanilla di app.js (ambang 0.12 ala mockup)", appJs.includes("IntersectionObserver") && appJs.includes("initReveal") && appJs.includes("threshold: 0.12") && appJs.includes('matchMedia("(prefers-reduced-motion: reduce)")'));
 
 /* ---------- komposisi mockup Kirana + bagian Pendidikan (2026-10-16) ---------- */
 const pos = (s) => indexHtml.indexOf(s);
@@ -165,21 +190,41 @@ t("komposisi: nav memuat tautan pendidikan & keahlian",
   indexHtml.includes('href="#pendidikan"') && indexHtml.includes('href="#keahlian"'));
 t("komposisi: wadah pendidikan & keahlian ada di HTML",
   indexHtml.includes('id="eduList"') && indexHtml.includes('id="skillBars"') && indexHtml.includes('id="skillTools"') && indexHtml.includes('id="skillLangs"'));
-t("komposisi: hero adegan mockup (lencana, burung, bintang, tikar)",
-  indexHtml.includes("hero-badge") && indexHtml.includes('class="bird left"') && indexHtml.includes('class="star s1"') && indexHtml.includes('class="mat"'));
-t("komposisi: tentang dua panel + footer wordmark raksasa & grid",
+t("komposisi: hero adegan mockup (lencana, anyaman, burung, bintang, tikar)",
+  indexHtml.includes('class="badge"') && indexHtml.includes('class="weave"') && indexHtml.includes('class="bird left"') && indexHtml.includes('class="star s1"') && indexHtml.includes('class="mat"'));
+t("komposisi: tentang dua frame mockup + footer wordmark raksasa & grid",
   indexHtml.includes('class="about-grid"') && indexHtml.includes('id="aboutFacts"') &&
   indexHtml.includes('class="foot-word"') && indexHtml.includes('class="foot-grid"') && indexHtml.includes('id="footLinks"'));
+t("komposisi: struktur header mockup (header > .nav > .brand .dot)",
+  indexHtml.includes('class="nav"') && indexHtml.includes('class="dot"') && indexHtml.includes('id="accountBtn"'));
+t("komposisi: kontak pola mockup (CTA email + .socials#linkList)",
+  indexHtml.includes('id="emailCta"') && indexHtml.includes('class="socials" id="linkList"') && indexHtml.includes("contact-panel"));
 t("app: pendidikan dirender publik & formulir editnya ada",
   appJs.includes("content.education") && appJs.includes('data-edu') && appJs.includes('data-ef="school"') && appJs.includes('id="addEduBtn"') || appJs.includes("addEduBtn"));
 t("app: keahlian dirender publik & formulir editnya ada",
   appJs.includes("content.skills.bars") && appJs.includes('data-bar') && appJs.includes('id="toolsInput"') && appJs.includes('id="langsInput"'));
 t("app: draf edit mengumpulkan pendidikan & keahlian",
   appJs.includes("draft.education") && appJs.includes("draft.skills"));
-t("css: pola mockup — chip kicker, bar keahlian, panel, footer gelap, grid tentang",
-  css.includes(".kicker") && css.includes(".bar") && css.includes(".panel") && css.includes(".foot-word") && css.includes(".about-grid") && css.includes(".skills-grid"));
+t("css: pola mockup — chip kicker, bar keahlian, frame, footer gelap, grid tentang & keahlian",
+  css.includes(".kicker") && css.includes(".bar") && css.includes(".frame") && css.includes(".foot-word") && css.includes(".about-grid") && css.includes(".skills"));
 t("css: hero langit gradasi + animasi bangau/bintang ala mockup",
   css.includes("radial-gradient") && css.includes("@keyframes sway") && css.includes("@keyframes spin") && css.includes(".mat"));
+t("app: kartu dirender sebagai .frame mockup (siklus warna & pastel persis mockup)",
+  appJs.includes("FRAME_VARS") && appJs.includes('"--orange", "--blue", "--green", "--purple", "--pink", "--yellow"') &&
+  appJs.includes("THUMB_BGS") && appJs.includes('"#ffcda3", "#c4f2fa", "#d3f9ec", "#ecd9fe", "#fcdce6", "#fff3a9"') &&
+  appJs.includes('class="frame lift rv') && appJs.includes('class="inner proj"') && appJs.includes('class="inner edu"'));
+t("app: kontak dirender pola mockup (email -> CTA, lain -> socials berglif)",
+  appJs.includes('$("#emailCta")') && appJs.includes("SOCIAL_GLYPHS") && appJs.includes('linkList.className = "socials"'));
+t("app: bar keahlian berwarna bergilir ala mockup (hijau/biru/ungu/pink)",
+  appJs.includes("BAR_COLORS") && appJs.includes('"var(--green)", "var(--blue)", "var(--purple)", "var(--pink)"'));
+/* Regresi bug fatal yang ditemukan saat porting: core.js & app.js berbagi
+ * ruang global skrip klasik — nama fungsi top-level core.js TIDAK boleh
+ * dideklarasikan ulang di app.js (pernah terjadi pada `isOwner`:
+ * SyntaxError membuat seluruh app.js mati dan situs tak pernah ter-render). */
+const coreSrc = readFileSync(join(root, "public", "core.js"), "utf8");
+const coreNames = [...coreSrc.matchAll(/^function (\w+)\(/gm)].map((m) => m[1]);
+t("regresi: app.js tidak mendeklarasikan ulang nama global core.js",
+  coreNames.length >= 8 && coreNames.every((n) => !new RegExp(`(^|\\n)\\s*(const|let|var|function)\\s+${n}\\b`).test(appJs)));
 
 console.log(`\nHasil uji portofolio: ${pass} lulus, ${fail} gagal`);
 process.exit(fail ? 1 : 0);

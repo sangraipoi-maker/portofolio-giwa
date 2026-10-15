@@ -19,34 +19,29 @@ let user = null;                             // pengguna Firebase (atau null)
 let editing = false;
 let fb = { ready: false, auth: null, db: null };
 
-const isOwner = () => !!user && C.isOwner(contentDoc, user.uid);
+const meIsOwner = () => !!user && C.isOwner(contentDoc, user.uid);
 const claimable = () => !!user && !contentDoc && C.canClaim(contentDoc);
 
-/* ---------- scroll-reveal ringan (pola AOS ala PIONIR) ----------
- * Elemen diberi kelas .rv (keadaan awal tersembunyi) HANYA bila
- * IntersectionObserver tersedia dan gerak tidak dikurangi — jadi tanpa
- * JS/IO atau dengan prefers-reduced-motion, konten selalu tampil penuh. */
+/* ---------- scroll reveal (pola AOS vanilla — persis mockup Kirana) ----------
+ * Elemen berkelas .rv mulai tersembunyi (CSS mockup) dan ditandai .on
+ * saat masuk viewport. Tanpa IntersectionObserver atau dengan
+ * prefers-reduced-motion, semua langsung ditandai .on (selalu tampil). */
 let revealObserver = null;
 function initReveal() {
-  const els = $$(".hero-inner > *, main section .kicker, main section h2.sec, .about-grid > .panel, #eduList > .card, #projectGrid > .card, .skills-grid > .panel, #linkList > li");
+  const els = $$(".rv");
   const reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (reduce || !("IntersectionObserver" in window)) {
-    els.forEach((el) => el.classList.add("rv-in"));
+    els.forEach((el) => el.classList.add("on"));
     return;
   }
   if (!revealObserver) {
     revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add("rv-in"); revealObserver.unobserve(en.target); }
+        if (en.isIntersecting) { en.target.classList.add("on"); revealObserver.unobserve(en.target); }
       });
-    }, { threshold: 0.1, rootMargin: "0px 0px -4% 0px" });
+    }, { threshold: 0.12 });
   }
-  els.forEach((el, i) => {
-    if (el.classList.contains("rv-in")) return;
-    el.classList.add("rv");
-    el.style.transitionDelay = (i % 4) * 50 + "ms";
-    revealObserver.observe(el);
-  });
+  els.forEach((el) => { if (!el.classList.contains("on")) revealObserver.observe(el); });
 }
 
 /* ---------- glif pita kartu proyek (SVG generik, bergilir per posisi) ---------- */
@@ -58,6 +53,18 @@ const GLYPHS = [
   `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 82 C20 62 16 40 30 28 C42 18 50 30 50 38 C50 30 58 18 70 28 C84 40 80 62 50 82Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="4" stroke-linejoin="round"/></svg>`,
   `<svg width="86" height="86" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L61 39 L94 39 L67 58 L77 90 L50 71 L23 90 L33 58 L6 39 L39 39Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="4" stroke-linejoin="round"/></svg>`,
 ];
+
+/* ---------- siklus warna mockup (urutan persis 6 kartu contoh Kirana) ---------- */
+const FRAME_VARS = ["--orange", "--blue", "--green", "--purple", "--pink", "--yellow"];
+const THUMB_BGS = ["#ffcda3", "#c4f2fa", "#d3f9ec", "#ecd9fe", "#fcdce6", "#fff3a9"];
+const BAR_COLORS = ["var(--green)", "var(--blue)", "var(--purple)", "var(--pink)"];
+/* Glif socials = 4 glif mockup; dipetakan per jenis tautan. */
+const SOCIAL_GLYPHS = {
+  instagram: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="3.6" fill="currentColor"/></svg>`,
+  whatsapp: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5 L20 12 L4 19 L8 12 Z" fill="currentColor"/></svg>`,
+  toko: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="2.2"/><path d="M4 10 H20" stroke="currentColor" stroke-width="2.2"/></svg>`,
+  tautan: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 L14.5 9.5 L21 12 L14.5 14.5 L12 21 L9.5 14.5 L3 12 L9.5 9.5 Z" fill="currentColor"/></svg>`,
+};
 
 /* ---------- fakta singkat di panel Tentang (dihitung dari konten) ---------- */
 function renderFacts() {
@@ -81,38 +88,56 @@ function renderView() {
   $("#aboutText").textContent = content.about;
   renderFacts();
 
-  $("#eduList").innerHTML = content.education.length ? content.education.map((e) => `
-    <article class="card">
-      <div class="meta">
-        ${e.level ? `<span class="badge">${esc(e.level)}</span>` : ""}
-        ${e.period ? `<span class="badge period">${esc(e.period)}</span>` : ""}
+  /* Pendidikan: komponen .frame mockup (tidak ada di mockup; dibangun dari
+   * pola kartu .proj + .tag yang sama persis). */
+  $("#eduList").innerHTML = content.education.length ? content.education.map((e, i) => `
+    <article class="frame lift rv" style="--fc:var(${FRAME_VARS[i % FRAME_VARS.length]})">
+      <div class="inner edu">
+        <h3>${esc(e.school)}</h3>
+        ${e.note ? `<p>${esc(e.note)}</p>` : ""}
+        ${(e.level || e.period) ? `<div class="tags">${e.level ? `<span class="tag">${esc(e.level)}</span>` : ""}${e.period ? `<span class="tag">${esc(e.period)}</span>` : ""}</div>` : ""}
       </div>
-      <h3>${esc(e.school)}</h3>
-      ${e.note ? `<p>${esc(e.note)}</p>` : ""}
     </article>`).join("") : `<p class="loading">Belum ada riwayat pendidikan.</p>`;
 
+  /* Proyek: struktur kartu mockup .frame > .inner.proj (thumb pastel bergilir,
+   * h3, p, tags). Status proyek ikut sebagai chip .tag kedua; tombol Kunjungi
+   * memakai komponen .btn mockup (tautan data — tidak ada di kartu mockup). */
   $("#projectGrid").innerHTML = content.projects.length ? content.projects.map((p, i) => `
-    <article class="card">
-      <div class="thumb">${GLYPHS[i % GLYPHS.length]}</div>
-      <div class="meta">
-        <span class="badge ${p.status === "dev" ? "dev" : "live"}">${esc(p.statusLabel)}</span>
+    <article class="frame lift rv${i % 3 === 1 ? " zoom" : ""}" style="--fc:var(${FRAME_VARS[i % FRAME_VARS.length]})">
+      <div class="inner proj">
+        <div class="thumb" style="background:${THUMB_BGS[i % THUMB_BGS.length]}">${GLYPHS[i % GLYPHS.length]}</div>
+        <h3>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</h3>
+        <p>${esc(p.desc)}</p>
+        <div class="tags">${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ""}<span class="tag">${esc(p.statusLabel)}</span></div>
+        ${p.url ? `<div class="visit"><a class="btn small orange" href="${esc(p.url)}" target="_blank" rel="noopener">Kunjungi →</a></div>` : `<p class="save-note" style="margin-top:1rem">Belum tayang</p>`}
       </div>
-      <h3>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</h3>
-      <p>${esc(p.desc)}</p>
-      ${p.tag ? `<div class="tags"><span class="tag">${esc(p.tag)}</span></div>` : ""}
-      ${p.url ? `<a class="visit" href="${esc(p.url)}" target="_blank" rel="noopener">Kunjungi →</a>` : `<span class="save-note">Belum tayang</span>`}
     </article>`).join("") : `<p class="loading">Belum ada proyek.</p>`;
 
-  $("#skillBars").innerHTML = content.skills.bars.length ? content.skills.bars.map((b) => `
+  $("#skillBars").innerHTML = content.skills.bars.length ? content.skills.bars.map((b, i) => `
     <div class="skill-row">
       <div class="lbl"><span>${esc(b.label)}</span><span>${b.pct}%</span></div>
-      <div class="bar"><i style="width:${b.pct}%"></i></div>
+      <div class="bar"><i style="width:${b.pct}%; background:${BAR_COLORS[i % BAR_COLORS.length]}"></i></div>
     </div>`).join("") : `<p class="loading">Belum ada data keahlian.</p>`;
   $("#skillTools").innerHTML = content.skills.tools.map((s) => `<span class="chip">${esc(s)}</span>`).join("");
   $("#skillLangs").innerHTML = content.skills.languages.map((s) => `<span class="chip">${esc(s)}</span>`).join("");
 
-  $("#linkList").innerHTML = content.links.map((l) => `
-    <li><a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""}>${esc(l.label)}</a></li>`).join("");
+  /* Kontak pola mockup: tautan email menjadi tombol CTA oranye besar,
+   * tautan lain menjadi baris .socials (kotak glif terpotong + label aksesibel).
+   * Semua label tetap tampil sebagai teks di kolom Kontak footer. */
+  const emailLink = content.links.find((l) => l.kind === "email" || /^mailto:/i.test(l.url));
+  const cta = $("#emailCta");
+  if (emailLink) {
+    cta.href = emailLink.url;
+    cta.textContent = emailLink.url.replace(/^mailto:/i, "");
+    cta.classList.remove("hidden");
+  } else {
+    cta.classList.add("hidden");
+  }
+  const linkList = $("#linkList");
+  linkList.className = "socials";
+  linkList.style.textAlign = "";
+  linkList.innerHTML = content.links.filter((l) => l !== emailLink).map((l) => `
+    <a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""} aria-label="${esc(l.label)}" title="${esc(l.label)}">${SOCIAL_GLYPHS[l.kind] || SOCIAL_GLYPHS.tautan}</a>`).join("");
   $("#footLinks").innerHTML = content.links.slice(0, 4).map((l) => `
     <a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""}>${esc(l.label)}</a>`).join("");
 
@@ -133,7 +158,7 @@ function renderOwnerBar() {
       <span class="save-note" id="saveNote"></span>`;
     $("#saveBtn").addEventListener("click", saveEdits);
     $("#cancelBtn").addEventListener("click", () => { editing = false; renderView(); });
-  } else if (isOwner()) {
+  } else if (meIsOwner()) {
     bar.innerHTML = `
       <span class="grow">Kamu masuk sebagai pemilik (${esc(user.email || "")}).</span>
       <button class="btn small" id="editBtn" type="button">✏️ Edit Situs Ini</button>
@@ -167,7 +192,8 @@ function renderEdit() {
   setEditable($("#aboutText"), content.about);
 
   $("#projectGrid").innerHTML = content.projects.map((p, i) => `
-    <article class="card editing" data-proj="${esc(p.id)}">
+    <article class="frame editing" style="--fc:var(${FRAME_VARS[i % FRAME_VARS.length]})" data-proj="${esc(p.id)}">
+      <div class="inner">
       <label class="fld">Judul proyek
         <input data-f="title" type="text" value="${esc(p.title)}" maxlength="120">
       </label>
@@ -177,29 +203,30 @@ function renderEdit() {
       <label class="fld">Tautan (kosongkan bila belum tayang)
         <input data-f="url" type="url" value="${esc(p.url)}" placeholder="https://…">
       </label>
-      <div class="meta">
-        <label class="fld" style="flex:1">Status
-          <select data-f="status">
-            <option value="live" ${p.status === "live" ? "selected" : ""}>Live</option>
-            <option value="dev" ${p.status === "dev" ? "selected" : ""}>Dalam Pengembangan</option>
-          </select>
-        </label>
-        <label class="fld" style="flex:1">Label status
-          <input data-f="statusLabel" type="text" value="${esc(p.statusLabel)}" maxlength="60">
-        </label>
-        <label class="fld" style="flex:1">Kategori
-          <input data-f="tag" type="text" value="${esc(p.tag)}" maxlength="60">
-        </label>
-      </div>
+      <label class="fld">Status
+        <select data-f="status">
+          <option value="live" ${p.status === "live" ? "selected" : ""}>Live</option>
+          <option value="dev" ${p.status === "dev" ? "selected" : ""}>Dalam Pengembangan</option>
+        </select>
+      </label>
+      <label class="fld">Label status
+        <input data-f="statusLabel" type="text" value="${esc(p.statusLabel)}" maxlength="60">
+      </label>
+      <label class="fld">Kategori
+        <input data-f="tag" type="text" value="${esc(p.tag)}" maxlength="60">
+      </label>
       <div class="edit-actions">
         <button class="icon-btn" type="button" data-act="up" ${i === 0 ? "disabled" : ""}>↑ Naik</button>
         <button class="icon-btn" type="button" data-act="down" ${i === content.projects.length - 1 ? "disabled" : ""}>↓ Turun</button>
         <button class="icon-btn red" type="button" data-act="del">🗑 Hapus proyek</button>
       </div>
+      </div>
     </article>`).join("") + `
-    <article class="card" style="align-items:flex-start;justify-content:center">
-      <button class="btn" type="button" id="addProjBtn">＋ Tambah Proyek</button>
-      <p class="save-note">Kartu baru muncul di urutan terakhir; naikkan dengan tombol ↑ sesudah menyimpan.</p>
+    <article class="frame" style="--fc:var(--yellow)">
+      <div class="inner">
+        <button class="btn" type="button" id="addProjBtn">＋ Tambah Proyek</button>
+        <p class="save-note" style="margin-top:.6rem">Kartu baru muncul di urutan terakhir; naikkan dengan tombol ↑ sesudah menyimpan.</p>
+      </div>
     </article>`;
 
   $$("#projectGrid [data-proj]").forEach((card) => {
@@ -227,7 +254,8 @@ function renderEdit() {
 
   /* --- formulir pendidikan: tambah/edit/hapus/urut, pola sama seperti proyek --- */
   $("#eduList").innerHTML = content.education.map((e, i) => `
-    <article class="card editing" data-edu="${esc(e.id)}">
+    <article class="frame editing" style="--fc:var(${FRAME_VARS[i % FRAME_VARS.length]})" data-edu="${esc(e.id)}">
+      <div class="inner">
       <label class="fld">Nama sekolah / kampus
         <input data-ef="school" type="text" value="${esc(e.school)}" maxlength="120">
       </label>
@@ -245,10 +273,13 @@ function renderEdit() {
         <button class="icon-btn" type="button" data-eact="down" ${i === content.education.length - 1 ? "disabled" : ""}>↓ Turun</button>
         <button class="icon-btn red" type="button" data-eact="del">🗑 Hapus entri</button>
       </div>
+      </div>
     </article>`).join("") + `
-    <article class="card" style="align-items:flex-start;justify-content:center">
-      <button class="btn" type="button" id="addEduBtn">＋ Tambah Pendidikan</button>
-      <p class="save-note">Entri baru muncul di urutan terakhir; naikkan dengan tombol ↑ sesudah menyimpan.</p>
+    <article class="frame" style="--fc:var(--yellow)">
+      <div class="inner">
+        <button class="btn" type="button" id="addEduBtn">＋ Tambah Pendidikan</button>
+        <p class="save-note" style="margin-top:.6rem">Entri baru muncul di urutan terakhir; naikkan dengan tombol ↑ sesudah menyimpan.</p>
+      </div>
     </article>`;
   $$("#eduList [data-edu]").forEach((card) => {
     $$("[data-eact]", card).forEach((b) => b.addEventListener("click", () => {
@@ -316,8 +347,11 @@ function renderEdit() {
       <textarea id="langsInput" rows="2">${esc(content.skills.languages.join("\n"))}</textarea>
     </label>`;
 
-  $("#linkList").innerHTML = content.links.map((l) => `
-    <li data-link="${esc(l.id)}" style="display:grid;gap:.4rem;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem">
+  const editLinks = $("#linkList");
+  editLinks.className = "";
+  editLinks.style.textAlign = "left";
+  editLinks.innerHTML = content.links.map((l) => `
+    <div class="link-edit-row" data-link="${esc(l.id)}">
       <label class="fld" style="margin:0">Label tautan
         <input data-lf="label" type="text" value="${esc(l.label)}" maxlength="120">
       </label>
@@ -325,8 +359,8 @@ function renderEdit() {
         <input data-lf="url" type="text" value="${esc(l.url)}">
       </label>
       <div><button class="icon-btn red" type="button" data-lact="del">🗑 Hapus tautan</button></div>
-    </li>`).join("") + `
-    <li style="margin-top:.6rem"><button class="btn small ghost" type="button" id="addLinkBtn">＋ Tambah Tautan</button></li>`;
+    </div>`).join("") + `
+    <div><button class="btn small ghost" type="button" id="addLinkBtn">＋ Tambah Tautan</button></div>`;
   $$("#linkList [data-link]").forEach((row) => {
     $("[data-lact]", row).addEventListener("click", () => {
       const draft = collectDraft();

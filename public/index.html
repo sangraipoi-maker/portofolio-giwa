@@ -10,24 +10,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&display=swap">
-<link rel="stylesheet" href="styles.css?v=pionir2">
+<link rel="stylesheet" href="styles.css?v=pionir3">
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="./"><span class="brand-dot" aria-hidden="true"></span><span class="brand-text"><span id="brandName">Portofolio Giwa</span><small>PORTOFOLIO PRIBADI</small></span></a>
-  <nav>
-    <a href="#tentang">Tentang</a>
-    <a href="#pendidikan">Pendidikan</a>
-    <a href="#proyek">Proyek</a>
-    <a href="#keahlian">Keahlian</a>
-    <a href="#kontak">Kontak</a>
-    <button id="accountBtn" type="button" class="hidden">Masuk Pemilik</button>
-  </nav>
+<!-- ================= HEADER (struktur mockup: header > .nav) ================= -->
+<header>
+  <div class="nav">
+    <a class="brand" href="./">
+      <span class="dot" aria-hidden="true"></span>
+      <span><span id="brandName">Portofolio Giwa</span><small>PORTOFOLIO PRIBADI · 2026</small></span>
+    </a>
+    <nav>
+      <a href="#tentang">TENTANG</a>
+      <a href="#pendidikan">PENDIDIKAN</a>
+      <a href="#proyek">PROYEK</a>
+      <a href="#keahlian">KEAHLIAN</a>
+      <a href="#kontak">KONTAK</a>
+    </nav>
+    <button id="accountBtn" type="button" class="btn orange small hidden">Masuk Pemilik</button>
+  </div>
 </header>
 
 <main>
-  <!-- ================= HERO (adegan ala mockup Kirana) ================= -->
-  <section class="hero">
+  <!-- ================= HERO (adegan mockup Kirana) ================= -->
+  <div class="hero">
+    <div class="weave"></div>
     <svg class="bird left" viewBox="0 0 120 80" fill="none" aria-hidden="true">
       <path d="M8 52 Q34 30 58 44 Q44 34 30 36 Q50 22 74 30 Q96 12 112 14 Q96 24 88 36 Q104 34 110 40 Q88 46 74 58 Q46 66 8 52Z" fill="#fffdf3" stroke="#4b2a18" stroke-width="3" stroke-linejoin="round"/>
       <circle cx="98" cy="24" r="3.4" fill="#4b2a18"/>
@@ -39,102 +46,126 @@
     <svg class="star s1" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39Z" fill="#ffe029" stroke="#4b2a18" stroke-width="3"/></svg>
     <svg class="star s2" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39Z" fill="#f58124" stroke="#4b2a18" stroke-width="3"/></svg>
     <div class="hero-inner">
-      <span class="hero-badge">✦ PORTOFOLIO ✦</span>
+      <span class="badge">✦ PORTOFOLIO · EDISI 2026 ✦</span>
       <h1 id="ownerName">Giwa — Arkasha Brainley Illyria</h1>
-      <p class="tagline" id="tagline"></p>
-      <div class="hero-cta">
-        <a class="btn pill orange" href="#proyek">Lihat Proyek</a>
-        <a class="btn pill ghost" href="#tentang">Tentang Saya</a>
+      <p class="desc" id="tagline"></p>
+      <div class="cta">
+        <a class="btn orange" href="#proyek">Lihat Proyek</a>
+        <a class="btn ghost" href="#tentang">Tentang Saya</a>
       </div>
     </div>
     <div class="mat" aria-hidden="true"></div>
-  </section>
+  </div>
 
-  <div class="container">
+  <div class="wrap">
     <div id="ownerBar" class="owner-bar hidden"></div>
+  </div>
 
-    <!-- ================= TENTANG ================= -->
-    <section id="tentang">
-      <span class="kicker">Tentang Saya</span>
-      <h2 class="sec">Halo, Kenalin!</h2>
+  <!-- ================= TENTANG ================= -->
+  <section id="tentang">
+    <div class="wrap">
+      <span class="kicker rv">TENTANG SAYA</span>
+      <h2 class="sec rv">Halo, Kenalin!</h2>
+      <p class="lead rv">Kenalan singkat — siapa saya dan apa yang saya kerjakan.</p>
       <div class="about-grid">
-        <div class="panel accent-blue">
-          <div class="portrait">
-            <svg viewBox="0 0 200 190" fill="none" aria-hidden="true">
-              <circle cx="100" cy="66" r="34" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/>
-              <path d="M52 190 Q56 118 100 118 Q144 118 148 190Z" fill="#f58124" stroke="#4b2a18" stroke-width="4"/>
-              <path d="M66 52 Q100 18 134 52 Q120 34 100 36 Q80 34 66 52Z" fill="#4b2a18"/>
-              <circle cx="88" cy="64" r="3.6" fill="#4b2a18"/><circle cx="112" cy="64" r="3.6" fill="#4b2a18"/>
-              <path d="M90 80 Q100 88 110 80" stroke="#4b2a18" stroke-width="3.4" stroke-linecap="round"/>
-            </svg>
+        <div class="frame lift rv" style="--fc:var(--blue)">
+          <div class="inner flush">
+            <div class="portrait">
+              <svg viewBox="0 0 200 190" fill="none" aria-hidden="true">
+                <circle cx="100" cy="66" r="34" fill="#fffdf3" stroke="#4b2a18" stroke-width="4"/>
+                <path d="M52 190 Q56 118 100 118 Q144 118 148 190Z" fill="#f58124" stroke="#4b2a18" stroke-width="4"/>
+                <path d="M66 52 Q100 18 134 52 Q120 34 100 36 Q80 34 66 52Z" fill="#4b2a18"/>
+                <circle cx="88" cy="64" r="3.6" fill="#4b2a18"/><circle cx="112" cy="64" r="3.6" fill="#4b2a18"/>
+                <path d="M90 80 Q100 88 110 80" stroke="#4b2a18" stroke-width="3.4" stroke-linecap="round"/>
+              </svg>
+            </div>
           </div>
         </div>
-        <div class="panel accent-brand">
-          <h3 class="panel-title">Cerita Singkat</h3>
-          <p id="aboutText" class="about"></p>
-          <div class="facts" id="aboutFacts"></div>
+        <div class="frame rv zoom" style="--fc:var(--orange)">
+          <div class="inner">
+            <h3 class="story-title">Cerita Singkat</h3>
+            <p id="aboutText" class="about-text"></p>
+            <div class="facts" id="aboutFacts"></div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ================= PENDIDIKAN ================= -->
-    <section id="pendidikan">
-      <span class="kicker">Riwayat Sekolah</span>
-      <h2 class="sec">Pendidikan</h2>
+  <!-- ================= PENDIDIKAN ================= -->
+  <section id="pendidikan">
+    <div class="wrap">
+      <span class="kicker rv">PENDIDIKAN</span>
+      <h2 class="sec rv">Riwayat Sekolah</h2>
+      <p class="lead rv">Sekolah dan kampus yang pernah saya tempuh.</p>
       <div id="eduList" class="edu-list" aria-live="polite">
         <p class="loading">Memuat pendidikan…</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ================= PROYEK ================= -->
-    <section id="proyek">
-      <span class="kicker">Portofolio</span>
-      <h2 class="sec">Proyek Pilihan</h2>
+  <!-- ================= PROYEK ================= -->
+  <section id="proyek">
+    <div class="wrap">
+      <span class="kicker rv">PORTOFOLIO</span>
+      <h2 class="sec rv">Proyek Pilihan</h2>
+      <p class="lead rv">Situs dan alat yang saya bangun sendiri dari nol — semuanya bisa dikunjungi langsung.</p>
       <div id="projectGrid" class="grid" aria-live="polite">
         <p class="loading">Memuat proyek…</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ================= KEAHLIAN ================= -->
-    <section id="keahlian">
-      <span class="kicker">Keahlian</span>
-      <h2 class="sec">Yang Bisa Saya Lakukan</h2>
-      <div class="skills-grid">
-        <div class="panel accent-green">
-          <div id="skillBars"></div>
+  <!-- ================= KEAHLIAN ================= -->
+  <section id="keahlian">
+    <div class="wrap">
+      <span class="kicker rv">KEAHLIAN</span>
+      <h2 class="sec rv">Yang Bisa Saya Lakukan</h2>
+      <p class="lead rv">Hal-hal yang saya pakai untuk membangun proyek-proyek di atas.</p>
+      <div class="skills">
+        <div class="frame rv" style="--fc:var(--green)">
+          <div class="inner">
+            <div id="skillBars"></div>
+          </div>
         </div>
-        <div class="panel accent-blue">
-          <h3 class="panel-title">Alat &amp; Teknologi</h3>
-          <div class="chips" id="skillTools"></div>
-          <h3 class="panel-title" style="margin-top:1.2rem">Bahasa</h3>
-          <div class="chips" id="skillLangs"></div>
+        <div class="frame rv zoom" style="--fc:var(--blue)">
+          <div class="inner">
+            <h3 class="sub-h">Alat &amp; Teknologi</h3>
+            <div class="chips" id="skillTools"></div>
+            <h3 class="sub-h">Bahasa</h3>
+            <div class="chips" id="skillLangs"></div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ================= KONTAK ================= -->
-    <section id="kontak">
-      <div class="panel accent-brand">
-        <div class="contact-panel">
-          <span class="kicker">Kontak</span>
-          <h2 class="sec">Mari Bekerja Sama!</h2>
-          <p class="contact-lead">Terbuka untuk kolaborasi, proyek alat belajar, dan obrolan seputar psikologi &amp; teknologi pendidikan.</p>
-          <ul id="linkList" class="links"></ul>
+  <!-- ================= KONTAK ================= -->
+  <section id="kontak">
+    <div class="wrap">
+      <div class="frame rv zoom" style="--fc:var(--orange)">
+        <div class="inner contact-panel">
+          <span class="kicker">KONTAK</span>
+          <h2>Mari Bekerja Sama!</h2>
+          <p>Terbuka untuk kolaborasi, proyek alat belajar, dan obrolan seputar psikologi &amp; teknologi pendidikan.</p>
+          <a class="btn orange" id="emailCta" href="mailto:giwatulungagung@mail.ugm.ac.id">giwatulungagung@mail.ugm.ac.id</a>
+          <div class="socials" id="linkList"></div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </main>
 
-<footer class="footer">
+<!-- ================= FOOTER ================= -->
+<footer>
   <div class="foot-word" id="footName">Portofolio Giwa</div>
   <div class="foot-grid">
     <div>
-      <h4>Tentang</h4>
+      <h4>TENTANG</h4>
       <p id="footTagline"></p>
     </div>
     <div>
-      <h4>Eksplorasi</h4>
+      <h4>EKSPLORASI</h4>
       <a href="#tentang">Tentang</a>
       <a href="#pendidikan">Pendidikan</a>
       <a href="#proyek">Proyek</a>
@@ -142,7 +173,7 @@
       <a href="#kontak">Kontak</a>
     </div>
     <div>
-      <h4>Kontak</h4>
+      <h4>KONTAK</h4>
       <div id="footLinks"></div>
     </div>
   </div>
@@ -167,11 +198,11 @@
   </div>
 </div>
 
-<script src="core.js?v=pionir2"></script>
+<script src="core.js?v=pionir3"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=pionir2"></script>
-<script src="app.js?v=pionir2"></script>
+<script src="firebase-config.js?v=pionir3"></script>
+<script src="app.js?v=pionir3"></script>
 </body>
 </html>

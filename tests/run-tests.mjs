@@ -110,5 +110,21 @@ t("app: fallback dirender sebelum Firebase", appJs.indexOf("renderView();") > -1
 t("app: mode edit digerbang isOwner/klaim", appJs.includes("C.isOwner(contentDoc, user.uid)") && appJs.includes("renderEdit"));
 t("app: simpan menulis site/content + riwayat", appJs.includes('doc("site/content")') && appJs.includes('collection("history")'));
 
+/* ---------- bahasa desain PIONIR (perapian visual 2026-10-16) ---------- */
+const css = readFileSync(join(root, "public", "styles.css"), "utf8");
+t("pionir: latar krem kertas #fffdf3", css.includes("--paper: #fffdf3"));
+t("pionir: teks tergelap #232323 & cokelat komponen", css.includes("--ink: #232323") && css.includes("--brown: #4b2a18") && css.includes("--brown-deep: #461a0c"));
+t("pionir: oranye jangkar #f58124 & kuning #ffe029", css.includes("--brand: #f58124") && css.includes("--yellow: #ffe029"));
+t("pionir: keluarga aksen per kartu lengkap", ["#3dc7f2", "#45e1b1", "#902ef5", "#f76f96"].every((h) => css.includes(h)));
+t("pionir: token sudut terpotong --container-cut + clip-path polygon", css.includes("--container-cut:") && css.includes("clip-path: var(--poly)") && /--poly: polygon\(/.test(css));
+t("pionir: bingkai dua lapis (lapis dalam --poly-in via ::before)", css.includes("--poly-in: polygon(") && /\.card::before/.test(css) && /\.hero::before/.test(css));
+t("pionir: aksen kartu berganti via nth-child + variabel --card-accent", css.includes("--card-accent") && /nth-child\(5n\+/.test(css));
+t("pionir: tombol 3D bayangan offset keras tanpa blur", css.includes("--button-shadow:") && /\.btn \{[^}]*box-shadow: var\(--button-shadow\)/.test(css) && /\.card \.visit \{[^}]*box-shadow: var\(--button-shadow\)/.test(css));
+t("pionir: font tunggal DM Sans", css.includes('"DM Sans"') && indexHtml.includes("family=DM+Sans"));
+t("pionir: header pil melayang fixed", /\.topbar \{[^}]*position: fixed/.test(css) && /\.topbar \{[^}]*border-radius: 999px/.test(css));
+t("pionir: scroll-reveal .rv/.rv-in + reduced-motion dihormati", css.includes(".rv.rv-in") && css.includes("prefers-reduced-motion: reduce"));
+t("pionir: aset berversi anti-cache basi di index", indexHtml.includes("styles.css?v=pionir1") && indexHtml.includes("app.js?v=pionir1"));
+t("pionir: reveal memakai IntersectionObserver vanilla di app.js", appJs.includes("IntersectionObserver") && appJs.includes("initReveal") && appJs.includes('matchMedia("(prefers-reduced-motion: reduce)")'));
+
 console.log(`\nHasil uji portofolio: ${pass} lulus, ${fail} gagal`);
 process.exit(fail ? 1 : 0);

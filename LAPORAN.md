@@ -62,3 +62,24 @@ Domain kustom (portogiwa.my.id dsb.) TIDAK dibeli/didaftarkan — belum diputusk
   menyegarkan tampilan publik tanpa refresh). Verifikasi ujung-ke-ujung di
   Firestore nyata menunggu aktivasi project (butir di atas).
 - Repo/situs lain (PsiKuis, Merdeka Belajar) TIDAK disentuh sama sekali.
+
+## Perapian visual — bahasa desain PIONIR (Damar🦫, 2026-10-16)
+
+Atas teguran Arkasha (desain awal tidak memakai referensi PIONIR), lapisan visual
+dirombak mengikuti bedah Kirana (`Research/Bedah-Website-Pionir-UGM-2026.md`).
+Yang ditiru bahasa desainnya — bukan aset/teks PIONIR/UGM:
+
+- Palet: latar krem kertas `#fffdf3`, teks `#232323`, cokelat `#4b2a18`/`#461a0c`,
+  oranye jangkar `#f58124`, kuning `#ffe029`; aksen per kartu berganti keluarga
+  (biru `#3dc7f2`, hijau `#45e1b1`, ungu `#902ef5`, pink `#f76f96`) via `--card-accent`.
+- Kartu proyek & hero: sudut terpotong 45° (`clip-path: polygon`, token
+  `--container-cut`) + bingkai dua lapis (lapis luar aksen, lapis dalam lebih kecil).
+- Tombol "3D" chunky: bayangan offset keras tanpa blur (`--button-shadow`),
+  tertekan saat `:active` — berlaku untuk CTA kartu, tombol simpan, Masuk Pemilik.
+- Tipografi tunggal DM Sans (Google Fonts), hierarki dari bobot + ukuran.
+- Header pil melayang `fixed`; scroll-reveal ringan IntersectionObserver vanilla
+  (fade-up), menghormati `prefers-reduced-motion`; hover kartu terangkat.
+- Isi, mode edit, rules, alamat live, dan fallback TIDAK berubah.
+  Uji: 65 lulus, 0 gagal (52 lama + 13 statis baru untuk token/gaya PIONIR).
+  Aset di `index.html` diberi query versi `?v=pionir1` agar pengunjung lama
+  tidak terjebak cache gaya lama di GitHub Pages.

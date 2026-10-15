@@ -22,6 +22,33 @@ let fb = { ready: false, auth: null, db: null };
 const isOwner = () => !!user && C.isOwner(contentDoc, user.uid);
 const claimable = () => !!user && !contentDoc && C.canClaim(contentDoc);
 
+/* ---------- scroll-reveal ringan (pola AOS ala PIONIR) ----------
+ * Elemen diberi kelas .rv (keadaan awal tersembunyi) HANYA bila
+ * IntersectionObserver tersedia dan gerak tidak dikurangi — jadi tanpa
+ * JS/IO atau dengan prefers-reduced-motion, konten selalu tampil penuh. */
+let revealObserver = null;
+function initReveal() {
+  const els = $$(".hero > *, main section > h2, #projectGrid > .card, #linkList > li");
+  const reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if (reduce || !("IntersectionObserver" in window)) {
+    els.forEach((el) => el.classList.add("rv-in"));
+    return;
+  }
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) { en.target.classList.add("rv-in"); revealObserver.unobserve(en.target); }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -4% 0px" });
+  }
+  els.forEach((el, i) => {
+    if (el.classList.contains("rv-in")) return;
+    el.classList.add("rv");
+    el.style.transitionDelay = (i % 4) * 50 + "ms";
+    revealObserver.observe(el);
+  });
+}
+
 /* ---------- render tampilan publik ---------- */
 function renderView() {
   document.title = content.siteName;
@@ -46,6 +73,7 @@ function renderView() {
     <li><a href="${esc(l.url)}" ${/^https?:/.test(l.url) ? `target="_blank" rel="noopener"` : ""}>${esc(l.label)}</a></li>`).join("");
 
   renderOwnerBar();
+  initReveal();
 }
 
 /* ---------- bar pemilik (hanya untuk pengguna masuk) ---------- */
@@ -178,6 +206,7 @@ function renderEdit() {
   });
 
   renderOwnerBar();
+  initReveal();
 }
 
 /* Kumpulkan seluruh isian formulir edit menjadi satu objek konten. */

@@ -1,0 +1,57 @@
+rules_version = '2';
+
+// Portofolio Giwa — pola: konten publik-baca, tulis hanya pemilik.
+//
+// Struktur:
+//   site/content            -> seluruh konten situs (siteName, tagline,
+//                              about, projects[], links[]) + ownerUid.
+//   site/content/history/{id} -> cadangan versi sebelumnya tiap penyimpanan.
+//
+// Kepemilikan: dokumen dibuat pertama kali oleh pengguna yang masuk
+// (klaim) — ownerUid di dokumen = uid pembuatnya. Sesudah itu hanya uid
+// yang sama yang boleh mengubah konten & membaca riwayat.
+// Pengunjung (tanpa login) hanya bisa MEMBACA site/content.
+// Semua jalur lain ditolak secara bawaan.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isOwnerDoc(data) {
+      return signedIn() && data.ownerUid == request.auth.uid;
+    }
+
+    match /site/content {
+      // Publik boleh membaca konten situs.
+      allow read: if true;
+
+      // Klaim pertama: pengguna masuk membuat dokumen & menandai dirinya.
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid;
+
+      // Ubah: hanya pemilik tercatat; ownerUid tidak boleh berpindah.
+      allow update: if isOwnerDoc(resource.data)
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+
+      // Hapus dokumen konten: tidak pernah.
+      allow delete: if false;
+
+      match /history/{entryId} {
+        // Riwayat hanya untuk pemilik (bukan publik).
+        allow read: if isOwnerDoc(
+          get(/databases/$(database)/documents/site/content).data);
+        // Cadangan hanya ditulis pemilik, isinya snapshot konten lama.
+        allow create: if isOwnerDoc(
+          get(/databases/$(database)/documents/site/content).data);
+        allow update, delete: if false;
+      }
+    }
+
+    // Semua jalur lain: tolak.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

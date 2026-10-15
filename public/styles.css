@@ -1,0 +1,117 @@
+/* Portofolio — bersih, mobile-first, tipografi & warna saja (tanpa gambar hasil generate). */
+:root {
+  --bg: #f6f4ec;
+  --card: #fffdf6;
+  --ink: #22302b;
+  --muted: #5d6d66;
+  --brand: #2f5d50;
+  --brand-soft: #dce8e1;
+  --accent: #c96f2e;
+  --line: #ddd6c4;
+  --danger: #b3261e;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+}
+a { color: var(--brand); }
+.hidden { display: none !important; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .7rem 1rem;
+  background: rgba(246, 244, 236, .94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.brand { font-family: Georgia, "Times New Roman", serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); text-decoration: none; }
+.topbar nav { display: flex; align-items: center; gap: .9rem; }
+.topbar nav a { color: var(--muted); text-decoration: none; font-size: .95rem; }
+.topbar nav a:hover { color: var(--brand); }
+
+.container { max-width: 960px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+.hero { padding: 2.2rem 0 1.2rem; }
+.kicker { text-transform: uppercase; letter-spacing: .18em; font-size: .75rem; color: var(--accent); margin: 0 0 .4rem; font-weight: 700; }
+h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; line-height: 1.2; margin: .2rem 0 .6rem; }
+h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.45rem; margin: 2.2rem 0 .9rem; border-bottom: 2px solid var(--brand-soft); padding-bottom: .35rem; }
+.tagline { font-size: 1.08rem; color: var(--muted); max-width: 42rem; margin: 0; }
+.about { max-width: 44rem; color: #33413b; white-space: pre-wrap; }
+.loading { color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } h1 { font-size: 2.5rem; } }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.15rem;
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.card .meta { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; }
+.badge { font-size: .72rem; font-weight: 700; padding: .14rem .55rem; border-radius: 999px; background: var(--brand-soft); color: var(--brand); }
+.badge.live { background: #dcebd8; color: #2c5b2e; }
+.badge.dev { background: #f6e3cd; color: #8a5312; }
+.card h3 { margin: 0; font-size: 1.18rem; }
+.card h3 a { color: var(--ink); text-decoration: none; }
+.card h3 a:hover { color: var(--brand); text-decoration: underline; }
+.card p { margin: 0; color: var(--muted); flex: 1; }
+.card .visit { font-weight: 600; text-decoration: none; }
+.card .visit:hover { text-decoration: underline; }
+
+.links { list-style: none; padding: 0; margin: 0; display: grid; gap: .55rem; }
+.links a { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: .7rem .9rem; text-decoration: none; color: var(--ink); font-weight: 600; }
+.links a:hover { border-color: var(--brand); color: var(--brand); }
+
+.footer { border-top: 1px solid var(--line); padding: 1.2rem 1rem 2rem; text-align: center; color: var(--muted); font-size: .9rem; }
+
+/* ---------- tombol & formulir ---------- */
+.btn {
+  background: var(--brand); color: #fff; border: none; border-radius: 10px;
+  padding: .6rem 1rem; font-size: .95rem; font-weight: 600; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--brand); border: 1px solid var(--brand); }
+.btn.small { padding: .35rem .7rem; font-size: .85rem; }
+.btn.danger { background: var(--danger); }
+.btn:disabled { opacity: .55; cursor: wait; }
+#accountBtn {
+  background: transparent; border: 1px solid var(--line); color: var(--muted);
+  border-radius: 999px; padding: .3rem .8rem; cursor: pointer; font-size: .85rem;
+}
+#accountBtn:hover { border-color: var(--brand); color: var(--brand); }
+.fld { display: block; margin: .7rem 0; font-size: .9rem; font-weight: 600; }
+.fld input, .fld textarea, .fld select {
+  width: 100%; margin-top: .3rem; padding: .55rem .65rem; font: inherit; font-weight: 400;
+  border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+}
+.auth-err { color: var(--danger); min-height: 1.2em; font-size: .9rem; margin-top: .4rem; }
+.sub { color: var(--muted); font-size: .92rem; }
+
+/* ---------- modal ---------- */
+.modal { position: fixed; inset: 0; background: rgba(24, 34, 30, .45); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+.modal-card { background: var(--card); border-radius: var(--radius); padding: 1.3rem; width: 100%; max-width: 420px; max-height: 90vh; overflow: auto; }
+.modal-card h2 { border: none; margin-top: 0; }
+
+/* ---------- mode edit (hanya dirender untuk pemilik) ---------- */
+.owner-bar {
+  background: #fdf6e3; border: 1px solid #e5cf8f; border-radius: 10px;
+  padding: .7rem .9rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: .6rem; align-items: center;
+}
+.owner-bar .grow { flex: 1; font-size: .9rem; color: #6b5710; }
+[contenteditable="true"] { outline: 2px dashed var(--accent); outline-offset: 3px; border-radius: 4px; }
+.card.editing { border-color: var(--accent); }
+.card .edit-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+.icon-btn {
+  background: var(--brand-soft); color: var(--brand); border: none; border-radius: 8px;
+  padding: .3rem .6rem; font-size: .82rem; font-weight: 700; cursor: pointer;
+}
+.icon-btn:hover { filter: brightness(.97); }
+.icon-btn.red { background: #f6d9d6; color: var(--danger); }
+.save-note { font-size: .85rem; color: var(--muted); }

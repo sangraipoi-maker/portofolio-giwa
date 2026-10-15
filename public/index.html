@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portofolio Giwa</title>
+<meta name="description" content="Portofolio Giwa (Arkasha Brainley Illyria) — mahasiswa Psikologi UGM yang membangun alat belajar digital: PsiKuis, Merdeka Belajar, Cari Tempat, dan Render Jurnal.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f5d50'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='%23f4f1e8' font-family='Georgia,serif'%3EG%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#2f5d50">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" id="brandName">Portofolio Giwa</a>
+  <nav>
+    <a href="#proyek">Proyek</a>
+    <a href="#tentang">Tentang</a>
+    <a href="#kontak">Kontak</a>
+    <button id="accountBtn" type="button" class="hidden">Masuk Pemilik</button>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <p class="kicker">Portofolio</p>
+    <h1 id="ownerName">Giwa — Arkasha Brainley Illyria</h1>
+    <p class="tagline" id="tagline"></p>
+  </section>
+
+  <section id="proyek">
+    <h2>Proyek</h2>
+    <div id="ownerBar" class="owner-bar hidden"></div>
+    <div id="projectGrid" class="grid" aria-live="polite">
+      <p class="loading">Memuat proyek…</p>
+    </div>
+  </section>
+
+  <section id="tentang">
+    <h2>Tentang</h2>
+    <p id="aboutText" class="about"></p>
+  </section>
+
+  <section id="kontak">
+    <h2>Kontak &amp; Tautan</h2>
+    <ul id="linkList" class="links"></ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <p><span id="footName">Portofolio Giwa</span> · Dibangun &amp; disunting langsung oleh pemiliknya.</p>
+</footer>
+
+<div id="authModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h2>Masuk Pemilik</h2>
+    <p class="sub">Hanya pemilik situs yang punya akun. Sesudah masuk, tombol sunting muncul bila akunmu adalah pemilik tercatat.</p>
+    <form id="authForm">
+      <label class="fld">Email
+        <input id="authEmail" type="email" required autocomplete="email" placeholder="nama@contoh.id">
+      </label>
+      <label class="fld">Kata sandi
+        <input id="authPass" type="password" required autocomplete="current-password" placeholder="minimal 6 karakter">
+      </label>
+      <div class="auth-err" id="authErr"></div>
+      <button class="btn" type="submit" style="width:100%">Masuk</button>
+    </form>
+    <p style="margin:.8rem 0 0"><button class="btn small ghost" id="authClose" type="button" style="float:right">Tutup</button></p>
+  </div>
+</div>
+
+<script src="core.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
